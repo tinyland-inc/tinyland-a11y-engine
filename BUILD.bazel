@@ -1,0 +1,26 @@
+load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
+load("@aspect_rules_js//npm:defs.bzl", "npm_package")
+
+ts_project(
+    name = "tinyland-a11y-engine",
+    srcs = glob(["src/**/*.ts"]),
+    declaration = True,
+    resolve_json_module = True,
+    tsconfig = "tsconfig.json",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//:node_modules/@types/node",
+    ],
+)
+
+npm_package(
+    name = "pkg",
+    srcs = [
+        "package.json",
+        "README.md",
+        "LICENSE",
+        ":tinyland-a11y-engine",
+    ],
+    package = "@tinyland-inc/tinyland-a11y-engine",
+    visibility = ["//visibility:public"],
+)
