@@ -75,7 +75,9 @@
       "optional": true
     }
   },
-  "dependencies": {},
+  "dependencies": {
+    "@tinyland-inc/tinyland-color-utils": "workspace:*"
+  },
   "devDependencies": {
     "@types/node": "^22.0.0",
     "svelte": "^5.0.0",
