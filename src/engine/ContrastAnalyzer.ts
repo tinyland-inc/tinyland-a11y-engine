@@ -19,6 +19,7 @@ export class ContrastAnalyzer {
    * Analyze contrast between text and background with enhanced detection
    */
   analyzeElement(element: Element): ContrastEvaluation | null {
+    if (!element) return null;
     const computed = window.getComputedStyle(element);
     const color = computed.color;
     const backgroundColor = this.getEffectiveBackground(element);
@@ -96,7 +97,16 @@ export class ContrastAnalyzer {
         fontSize,
         fontWeight,
         contrastMode: hasProblematicVariant ? 'problematic-variant' : 'standard',
-        variantClasses: Array.from(element.classList).filter(c => c.includes('variant-'))
+        variantClasses: Array.from(element.classList).filter(c => c.includes('variant-')),
+        themeInfo,
+        isNearIdentical,
+        isInvisible,
+        computedStyles: {
+          color,
+          backgroundColor,
+          fontSize,
+          fontWeight
+        }
       }
     };
 

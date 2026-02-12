@@ -38,27 +38,31 @@ describe('AccessibilityOrchestrator', () => {
     // Cast mock to match expected signature for TS7 compatibility
     onResultsMock = vi.fn() as unknown as (results: EvaluationResult[], stats: EvaluationStats) => void;
 
-    // Setup mocks
+    // Setup mocks - use regular functions (not arrow functions) so they work as constructors with `new`
     mockSampler = {
       sampleElements: vi.fn().mockReturnValue([]),
       observeChanges: vi.fn(),
       destroy: vi.fn()
     };
-    (DOMSampler as any).mockImplementation(() => mockSampler);
+    (DOMSampler as any).mockImplementation(function (this: any) { Object.assign(this, mockSampler); return mockSampler; });
 
     mockContrastAnalyzer = {
       analyzeElement: vi.fn(),
       destroy: vi.fn()
     };
-    (ContrastAnalyzer as any).mockImplementation(() => mockContrastAnalyzer);
-    (StreamingClient as any).mockImplementation(() => ({
-      connect: vi.fn(),
-      disconnect: vi.fn(),
-      send: vi.fn().mockResolvedValue(undefined),
-      sendEvaluation: vi.fn().mockResolvedValue(undefined),
-      sendHeartbeat: vi.fn(),
-      getStatus: vi.fn().mockReturnValue({ connected: true, queueSize: 0, retryAttempts: 0 })
-    }));
+    (ContrastAnalyzer as any).mockImplementation(function (this: any) { Object.assign(this, mockContrastAnalyzer); return mockContrastAnalyzer; });
+    (StreamingClient as any).mockImplementation(function (this: any) {
+      const instance = {
+        connect: vi.fn(),
+        disconnect: vi.fn(),
+        send: vi.fn().mockResolvedValue(undefined),
+        sendEvaluation: vi.fn().mockResolvedValue(undefined),
+        sendHeartbeat: vi.fn(),
+        getStatus: vi.fn().mockReturnValue({ connected: true, queueSize: 0, retryAttempts: 0 })
+      };
+      Object.assign(this, instance);
+      return instance;
+    });
   });
 
   afterEach(() => {

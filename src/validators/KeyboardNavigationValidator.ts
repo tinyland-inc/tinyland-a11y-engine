@@ -132,13 +132,29 @@ export class KeyboardNavigationValidator {
   private validateKeyboardTraps(container: HTMLElement, results: EvaluationResult[]) {
     // Check for modal dialogs without escape mechanisms
     const modals = container.querySelectorAll('[role="dialog"][aria-modal="true"]');
-    
+
     modals.forEach(modal => {
+      // Use standard CSS selectors (`:has-text()` is not a valid CSS pseudo-class)
       const closeButtons = modal.querySelectorAll(
-        'button[aria-label*="close" i], button[aria-label*="cancel" i], button:has-text("×"), button:has-text("Close")'
+        'button[aria-label*="close" i], button[aria-label*="cancel" i], button[aria-label*="Close"], button[aria-label*="Cancel"]'
       );
-      
-      if (closeButtons.length === 0) {
+
+      // Also check for buttons with close-related text content
+      let hasCloseButton = closeButtons.length > 0;
+      if (!hasCloseButton) {
+        const allButtons = modal.querySelectorAll('button');
+        for (const btn of allButtons) {
+          const text = btn.textContent?.trim().toLowerCase() || '';
+          const ariaLabel = btn.getAttribute('aria-label')?.toLowerCase() || '';
+          if (text === '\u00d7' || text === 'close' || text === 'cancel' ||
+              text === 'x' || ariaLabel.includes('close') || ariaLabel.includes('cancel')) {
+            hasCloseButton = true;
+            break;
+          }
+        }
+      }
+
+      if (!hasCloseButton) {
         results.push({
           id: this.generateId(),
           timestamp: Date.now(),
@@ -206,14 +222,25 @@ export class KeyboardNavigationValidator {
   private validateSkipLinks(container: HTMLElement, results: EvaluationResult[]) {
     // Only check at document level
     if (container !== document.body) return;
-    
-    const skipLinks = document.querySelectorAll(
-      'a[href^="#"][class*="skip"], a[href^="#"]:has-text("skip")'
-    );
-    
+
+    // Find skip links by class name (`:has-text()` is not a valid CSS pseudo-class)
+    const skipLinksByClass = document.querySelectorAll('a[href^="#"][class*="skip"]');
+
+    // Also check for links whose text content includes "skip"
+    let hasSkipLink = skipLinksByClass.length > 0;
+    if (!hasSkipLink) {
+      const allHashLinks = document.querySelectorAll('a[href^="#"]');
+      for (const link of allHashLinks) {
+        if (link.textContent?.toLowerCase().includes('skip')) {
+          hasSkipLink = true;
+          break;
+        }
+      }
+    }
+
     const hasNavigation = document.querySelector('nav, [role="navigation"]');
-    
-    if (hasNavigation && skipLinks.length === 0) {
+
+    if (hasNavigation && !hasSkipLink) {
       // Look for any link to main content
       const mainContentLinks = document.querySelectorAll('a[href="#main"], a[href="#content"]');
       
