@@ -165,6 +165,10 @@ export interface ContrastEvaluation extends EvaluationResult {
     fontWeight?: string;
     contrastMode?: string;
     variantClasses?: string[];
+    themeInfo?: unknown;
+    isNearIdentical?: boolean;
+    isInvisible?: boolean;
+    computedStyles?: Record<string, string | number>;
   };
 }
 

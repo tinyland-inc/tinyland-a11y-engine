@@ -168,13 +168,13 @@ export class ContrastTestRunner {
           );
         }
 
-        if (test.expected.minRatio !== undefined && validation.ratio < test.expected.minRatio) {
+        if (test.expected.minRatio !== undefined && validation.ratio !== undefined && validation.ratio < test.expected.minRatio) {
           failures.push(
             `Expected ratio >= ${test.expected.minRatio}, got ${validation.ratio.toFixed(2)}`
           );
         }
 
-        if (test.expected.maxRatio !== undefined && validation.ratio > test.expected.maxRatio) {
+        if (test.expected.maxRatio !== undefined && validation.ratio !== undefined && validation.ratio > test.expected.maxRatio) {
           failures.push(
             `Expected ratio <= ${test.expected.maxRatio}, got ${validation.ratio.toFixed(2)}`
           );
@@ -411,7 +411,7 @@ export class ContrastTestRunner {
         report.push(`\n#### ${icon} ${test.name}`);
         
         if (test.validation) {
-          report.push(`- Ratio: ${test.validation.ratio.toFixed(2)}:1`);
+          report.push(`- Ratio: ${test.validation.ratio?.toFixed(2) ?? 'N/A'}:1`);
           report.push(`- Valid: ${test.validation.valid}`);
           
           if (test.validation.errors.length > 0) {

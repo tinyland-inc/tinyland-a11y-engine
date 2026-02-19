@@ -366,6 +366,7 @@ export class ThemeContrastValidator extends ContrastValidator {
       }
 
       // Check for significant ratio differences
+      if (lightRatio === undefined || darkRatio === undefined) continue;
       const ratioDiff = Math.abs(lightRatio - darkRatio);
       if (ratioDiff > 3) {
         const warning: ValidationWarning = {

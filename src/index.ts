@@ -32,7 +32,10 @@ export {
 export { getComputedColor, getEffectiveBackgroundColor } from './contrast.js';
 
 // ========== Validators ==========
-export * from './validators.js';
+// Note: validators.js and validators/index.js both export validateContrast.
+// We use named exports from validators.js to avoid the duplicate.
+export type { ValidationError, ValidationWarning, ValidationResult, ValidationContext, ValidationOptions } from './validators.js';
+export { validateTransparency, validateThemeConsistency, validateFocusIndicator, validateTextSize } from './validators.js';
 export * from './validators/index.js';
 
 // ========== Svelte actions (requires svelte peerDependency) ==========
