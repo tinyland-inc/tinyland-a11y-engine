@@ -64,17 +64,13 @@
   },
   "peerDependencies": {
     "svelte": ">=4.0.0",
-    "axe-core": ">=4.0.0",
-    "@tinyland-inc/tinyland-color-utils": "^0.1.0"
+    "axe-core": ">=4.0.0"
   },
   "peerDependenciesMeta": {
     "svelte": {
       "optional": true
     },
     "axe-core": {
-      "optional": true
-    },
-    "@tinyland-inc/tinyland-color-utils": {
       "optional": true
     }
   },
@@ -92,5 +88,8 @@
   "publishConfig": {
     "registry": "https://npm.pkg.github.com",
     "access": "restricted"
+  },
+  "dependencies": {
+    "@tinyland-inc/tinyland-color-utils": "^0.1.0"
   }
 }

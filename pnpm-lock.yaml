@@ -1,12 +1,16 @@
 lockfileVersion: '9.0'
 
 settings:
-  autoInstallPeers: false
+  autoInstallPeers: true
   excludeLinksFromLockfile: false
 
 importers:
 
   .:
+    dependencies:
+      '@tinyland-inc/tinyland-color-utils':
+        specifier: ^0.1.0
+        version: 0.1.0
     devDependencies:
       '@types/node':
         specifier: ^22.0.0
@@ -364,6 +368,10 @@ packages:
     resolution: {integrity: sha512-lVJX6qEgs/4DOcRTpo56tmKzVPtoWAaVbL4hfO7t7NVwl9AAXzQR6cihesW1BmNMPl+bK6dreu2sOKBP2Q9CIA==}
     peerDependencies:
       acorn: ^8.9.0
+
+  '@tinyland-inc/tinyland-color-utils@0.1.0':
+    resolution: {integrity: sha512-LMwqbgUOw9l4xIZVl11H+D2PIHE02sVkiSFhKj35ASgd7AvgGGHB7fLWYYjzNiLZjaDY8yVYwxToajh5zt0pzA==, tarball: https://npm.pkg.github.com/download/@tinyland-inc/tinyland-color-utils/0.1.0/cf33858fb01e4e16e87f095356ee9223bdf84c94}
+    engines: {node: '>=20.0.0'}
 
   '@types/chai@5.2.3':
     resolution: {integrity: sha512-Mw558oeA9fFbv65/y4mHtXDs9bPnFMZAL/jxdPFUpOHHIXX91mcgEHbS5Lahr+pwZFR8A7GQleRWeI6cGFC2UA==}
@@ -1062,6 +1070,8 @@ snapshots:
   '@sveltejs/acorn-typescript@1.0.9(acorn@8.16.0)':
     dependencies:
       acorn: 8.16.0
+
+  '@tinyland-inc/tinyland-color-utils@0.1.0': {}
 
   '@types/chai@5.2.3':
     dependencies:

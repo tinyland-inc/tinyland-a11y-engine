@@ -43,6 +43,12 @@ default:
   - corepack prepare pnpm@10.13.1 --activate
   - pnpm config set store-dir ${PNPM_STORE_DIR}
   - |
+    # Configure GitHub Packages auth for @tinyland-inc dependencies
+    if [ -n "${GITHUB_TOKEN:-}" ]; then
+      echo "@tinyland-inc:registry=https://npm.pkg.github.com" > .npmrc
+      echo "//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}" >> .npmrc
+    fi
+  - |
     if [ -f pnpm-lock.yaml ]; then
       pnpm install --frozen-lockfile
     else
