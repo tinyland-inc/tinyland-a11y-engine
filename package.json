@@ -1,0 +1,94 @@
+{
+  "name": "@tinyland-inc/tinyland-a11y-engine",
+  "version": "0.1.0",
+  "description": "High-performance streaming accessibility evaluation engine with WCAG contrast analysis, ARIA validation, and keyboard navigation checking",
+  "type": "module",
+  "license": "Zlib AND LicenseRef-Tinyland-Proprietary",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./validators": {
+      "types": "./dist/validators/index.d.ts",
+      "import": "./dist/validators/index.js"
+    },
+    "./plugins": {
+      "types": "./dist/plugins/index.d.ts",
+      "import": "./dist/plugins/index.js"
+    },
+    "./streaming": {
+      "types": "./dist/streaming/index.d.ts",
+      "import": "./dist/streaming/index.js"
+    },
+    "./reporting": {
+      "types": "./dist/reporting/index.d.ts",
+      "import": "./dist/reporting/index.js"
+    },
+    "./color": {
+      "types": "./dist/utils/color/index.d.ts",
+      "import": "./dist/utils/color/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "accessibility",
+    "a11y",
+    "wcag",
+    "contrast",
+    "aria",
+    "validation",
+    "color",
+    "streaming"
+  ],
+  "author": "Tinyland.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tinyland-inc/tinyland-a11y-engine.git"
+  },
+  "peerDependencies": {
+    "svelte": ">=4.0.0",
+    "axe-core": ">=4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "svelte": {
+      "optional": true
+    },
+    "axe-core": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@tinyland-inc/tinyland-color-utils": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "svelte": "^5.0.0",
+    "axe-core": "^4.10.0",
+    "typescript": "^5.0.0",
+    "vitest": "^4.0.0"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  }
+}
