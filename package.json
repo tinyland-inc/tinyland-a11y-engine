@@ -83,7 +83,8 @@
     "svelte": "^5.0.0",
     "axe-core": "^4.10.0",
     "typescript": "^5.0.0",
-    "vitest": "^4.0.0"
+    "vitest": "^4.0.0",
+    "jsdom": "^25.0.0"
   },
   "engines": {
     "node": ">=22.0.0"
