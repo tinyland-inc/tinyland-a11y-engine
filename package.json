@@ -64,7 +64,8 @@
   },
   "peerDependencies": {
     "svelte": ">=4.0.0",
-    "axe-core": ">=4.0.0"
+    "axe-core": ">=4.0.0",
+    "@tinyland-inc/tinyland-color-utils": "^0.1.0"
   },
   "peerDependenciesMeta": {
     "svelte": {
@@ -72,10 +73,10 @@
     },
     "axe-core": {
       "optional": true
+    },
+    "@tinyland-inc/tinyland-color-utils": {
+      "optional": true
     }
-  },
-  "dependencies": {
-    "@tinyland-inc/tinyland-color-utils": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
