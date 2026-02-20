@@ -1,5 +1,5 @@
 /**
- * @deprecated Use `@tinyland-inc/tinyland-color-utils` directly instead.
+ * @deprecated Use `@tummycrypt/tinyland-color-utils` directly instead.
  * This file is a backward-compatible re-export shim.
  */
-export * from '@tinyland-inc/tinyland-color-utils';
+export * from '@tummycrypt/tinyland-color-utils';

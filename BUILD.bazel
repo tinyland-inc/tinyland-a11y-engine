@@ -21,6 +21,6 @@ npm_package(
         "LICENSE",
         ":tinyland-a11y-engine",
     ],
-    package = "@tinyland-inc/tinyland-a11y-engine",
+    package = "@tummycrypt/tinyland-a11y-engine",
     visibility = ["//visibility:public"],
 )

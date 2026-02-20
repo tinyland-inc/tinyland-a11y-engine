@@ -1,5 +1,5 @@
 {
-  "name": "@tinyland-inc/tinyland-a11y-engine",
+  "name": "@tummycrypt/tinyland-a11y-engine",
   "version": "0.1.0",
   "description": "High-performance streaming accessibility evaluation engine with WCAG contrast analysis, ARIA validation, and keyboard navigation checking",
   "type": "module",
@@ -76,7 +76,7 @@
     }
   },
   "dependencies": {
-    "@tinyland-inc/tinyland-color-utils": "workspace:*"
+    "@tummycrypt/tinyland-color-utils": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
@@ -87,5 +87,9 @@
   },
   "engines": {
     "node": ">=22.0.0"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
   }
 }

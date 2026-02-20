@@ -1,5 +1,5 @@
 /**
- * @tinyland-inc/tinyland-a11y-engine
+ * @tummycrypt/tinyland-a11y-engine
  *
  * High-performance streaming accessibility evaluation engine with WCAG
  * contrast analysis, ARIA validation, and keyboard navigation checking.

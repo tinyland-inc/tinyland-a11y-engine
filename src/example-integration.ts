@@ -112,7 +112,7 @@ export const exampleUsage = `
     initializeAccessibilityEngine, 
     evaluatePageAccessibility,
     observePageChanges 
-  } from '@tinyland-inc/tinyland-a11y-engine';
+  } from '@tummycrypt/tinyland-a11y-engine';
 
   let engine;
   let results = [];
