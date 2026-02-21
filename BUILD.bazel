@@ -1,5 +1,8 @@
 load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
 load("@aspect_rules_js//npm:defs.bzl", "npm_package")
+load("@npm//:defs.bzl", "npm_link_all_packages")
+
+npm_link_all_packages(name = "node_modules")
 
 ts_project(
     name = "tinyland-a11y-engine",
@@ -10,7 +13,7 @@ ts_project(
     transpiler = "tsc",
     visibility = ["//visibility:public"],
     deps = [
-        "//:node_modules/@types/node",
+        ":node_modules/@types/node",
     ],
 )
 
