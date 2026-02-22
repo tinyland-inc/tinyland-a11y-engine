@@ -1,23 +1,36 @@
 load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
 load("@aspect_rules_js//npm:defs.bzl", "npm_package")
 load("@npm//:defs.bzl", "npm_link_all_packages")
+load("@npm//:vitest/package_json.bzl", vitest_bin = "bin")
 
 npm_link_all_packages(name = "node_modules")
 
 ts_project(
-    name = "tinyland-a11y-engine",
-    srcs = glob(["src/**/*.ts"]),
+    name = "tinyland_a11y_engine",
+    srcs = glob(
+        ["src/**/*.ts"],
+        exclude = [
+            "src/**/*.test.ts",
+            "src/**/*.spec.ts",
+        ],
+    ) + ["package.json"],
     declaration = True,
+    declaration_map = True,
+    source_map = True,
     resolve_json_module = True,
-    tsconfig = "tsconfig.json",
+    tsconfig = ":tsconfig.json",
     transpiler = "tsc",
     out_dir = "dist",
     root_dir = "src",
     validate = False,
-    visibility = ["//visibility:public"],
     deps = [
+        ":node_modules",
+        "//packages:tsconfig_base",
         ":node_modules/@types/node",
+        ":node_modules/svelte",
+        ":node_modules/axe-core",
     ],
+    visibility = ["//visibility:public"],
 )
 
 npm_package(
@@ -26,8 +39,55 @@ npm_package(
         "package.json",
         "README.md",
         "LICENSE",
-        ":tinyland-a11y-engine",
+        ":tinyland_a11y_engine",
     ],
     package = "@tummycrypt/tinyland-a11y-engine",
+    version = "0.1.0",
+    visibility = ["//visibility:public"],
+)
+
+vitest_bin.vitest_test(
+    name = "test",
+    data = [
+        ":node_modules",
+        "tsconfig.json",
+        "//packages:tsconfig_base",
+        ":node_modules/vitest",
+        "vitest.config.ts",
+    ] + glob(["src/**/*.ts"]) + glob(["tests/**/*.test.ts", "tests/**/*.ts"]),
+    args = [
+        "run",
+        "--reporter=verbose",
+        "--config",
+        "$(rootpath vitest.config.ts)",
+    ],
+    log_level = "info",
+    visibility = ["//visibility:public"],
+)
+
+ts_project(
+    name = "typecheck",
+    srcs = glob(["src/**/*.ts"]) + ["package.json"],
+    declaration = False,
+    no_emit = True,
+    tsconfig = ":tsconfig.json",
+    transpiler = "tsc",
+    validate = False,
+    deps = [
+        ":node_modules",
+        "//packages:tsconfig_base",
+        ":node_modules/@types/node",
+        ":node_modules/svelte",
+        ":node_modules/axe-core",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+exports_files(
+    [
+        "package.json",
+        "tsconfig.json",
+        "vitest.config.ts",
+    ],
     visibility = ["//visibility:public"],
 )
