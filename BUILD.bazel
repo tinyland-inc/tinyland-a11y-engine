@@ -11,6 +11,9 @@ ts_project(
     resolve_json_module = True,
     tsconfig = "tsconfig.json",
     transpiler = "tsc",
+    out_dir = "dist",
+    root_dir = "src",
+    validate = False,
     visibility = ["//visibility:public"],
     deps = [
         ":node_modules/@types/node",
