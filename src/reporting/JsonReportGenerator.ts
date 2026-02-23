@@ -259,7 +259,7 @@ export class JsonReportGenerator {
     });
 
     return Array.from(failureMap.values())
-      .sort((a, b) => a.ratio - b.ratio); // Worst contrast first
+      .sort((a, b) => a.ratio - b.ratio); 
   }
 
   private generateActionableItems(
@@ -268,7 +268,7 @@ export class JsonReportGenerator {
   ): ActionableItem[] {
     const items: ActionableItem[] = [];
 
-    // Generate actions for contrast failures
+    
     contrastFailures.slice(0, 10).forEach(failure => {
       items.push({
         priority: failure.ratio < 3 ? 'immediate' : 'high',
@@ -281,7 +281,7 @@ export class JsonReportGenerator {
       });
     });
 
-    // Generate actions for violations
+    
     violations.forEach(violation => {
       const priority = violation.impact === 'critical' ? 'immediate' : 
                       violation.impact === 'serious' ? 'high' : 
@@ -403,7 +403,7 @@ export class JsonReportGenerator {
           components[component].violations.push(violation.id);
         }
         
-        // Update severity to worst case
+        
         const severityOrder = { critical: 0, serious: 1, moderate: 2, minor: 3 };
         const currentSeverity = severityOrder[components[component].severity];
         const violationSeverity = severityOrder[violation.impact as keyof typeof severityOrder];
@@ -441,7 +441,7 @@ export class JsonReportGenerator {
   }
 
   private getScreenshotPaths(results: AccessibilityTestResult[]): string[] {
-    // In a real implementation, this would return actual screenshot paths
+    
     return results
       .filter(r => r.axeResults.violations.length > 0)
       .map(r => `screenshots/${r.route.replace(/\//g, '-')}-${r.theme}.png`);

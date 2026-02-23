@@ -1,15 +1,15 @@
-/**
- * Reconnect Strategy - Stub module for WebSocket reconnection
- */
+
+
+
 
 export interface ReconnectOptions {
-  /** Initial delay in ms */
+  
   initialDelay?: number;
-  /** Maximum delay in ms */
+  
   maxDelay?: number;
-  /** Backoff multiplier */
+  
   multiplier?: number;
-  /** Maximum reconnection attempts */
+  
   maxAttempts?: number;
 }
 
@@ -31,7 +31,7 @@ export class ReconnectStrategy {
 
   getNextDelay(): number {
     if (this.attempts >= this.maxAttempts) {
-      return -1; // Signal to stop reconnecting
+      return -1; 
     }
 
     const delay = this.currentDelay;

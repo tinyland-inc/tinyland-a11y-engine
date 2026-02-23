@@ -477,7 +477,7 @@ export class HtmlReportGenerator {
         .forEach(c => contrastFailures.push(c));
     });
 
-    // Get unique failures
+    
     const uniqueFailures = new Map<string, ContrastTestResult>();
     contrastFailures.forEach(failure => {
       const key = `${failure.foreground}-${failure.background}`;

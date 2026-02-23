@@ -1,7 +1,7 @@
-/**
- * Theme-Aware Contrast Validator
- * Validates contrast across different theme modes (light, dark, high contrast)
- */
+
+
+
+
 
 import {
   type RGB,
@@ -45,15 +45,15 @@ export interface ThemeValidationResult {
   };
 }
 
-/**
- * Validates contrast across different theme modes
- */
+
+
+
 export class ThemeContrastValidator extends ContrastValidator {
   private themeCache = new Map<string, ThemeColors>();
 
-  /**
-   * Validate element across all theme modes
-   */
+  
+
+
   async validateAcrossThemes(
     element: Element,
     options: ThemeValidationOptions = { themes: ['light', 'dark'] }
@@ -65,7 +65,7 @@ export class ThemeContrastValidator extends ContrastValidator {
       results.set(theme, result);
     }
 
-    // Check for contrast inversion issues
+    
     if (options.checkInversion && options.themes.includes('light') && options.themes.includes('dark')) {
       const lightResult = results.get('light');
       const darkResult = results.get('dark');
@@ -78,19 +78,19 @@ export class ThemeContrastValidator extends ContrastValidator {
     return results;
   }
 
-  /**
-   * Validate specific theme
-   */
+  
+
+
   private async validateTheme(
     element: Element,
     theme: string,
     options: ExtendedValidationOptions
   ): Promise<ThemeValidationResult> {
-    // Apply theme to document
+    
     const previousTheme = document.documentElement.getAttribute('data-theme');
     document.documentElement.setAttribute('data-theme', theme);
 
-    // Force style recalculation
+    
     element.getBoundingClientRect();
 
     const validationResults = new Map<string, ValidationResult>();
@@ -99,7 +99,7 @@ export class ThemeContrastValidator extends ContrastValidator {
     let failed = 0;
     let warnings = 0;
 
-    // Validate main element
+    
     const mainResult = await this.validateElementWithTheme(element, options);
     validationResults.set('main', mainResult);
     totalChecks++;
@@ -107,7 +107,7 @@ export class ThemeContrastValidator extends ContrastValidator {
     else failed++;
     warnings += mainResult.warnings.length;
 
-    // Find and validate all text elements within
+    
     const textElements = this.findAllTextElements(element);
     
     for (let i = 0; i < textElements.length; i++) {
@@ -120,7 +120,7 @@ export class ThemeContrastValidator extends ContrastValidator {
       warnings += result.warnings.length;
     }
 
-    // Validate interactive elements
+    
     const interactiveElements = element.querySelectorAll(
       'button, a, input, textarea, select, [role="button"], [role="link"], [tabindex]'
     );
@@ -138,7 +138,7 @@ export class ThemeContrastValidator extends ContrastValidator {
       warnings += result.warnings.length;
     }
 
-    // Restore previous theme
+    
     if (previousTheme) {
       document.documentElement.setAttribute('data-theme', previousTheme);
     } else {
@@ -158,9 +158,9 @@ export class ThemeContrastValidator extends ContrastValidator {
     };
   }
 
-  /**
-   * Validate element in current theme context
-   */
+  
+
+
   private async validateElementWithTheme(
     element: Element,
     options: ExtendedValidationOptions
@@ -168,7 +168,7 @@ export class ThemeContrastValidator extends ContrastValidator {
     const errors: ValidationError[] = [];
     const warnings: ValidationWarning[] = [];
 
-    // Get computed colors in current theme
+    
     const foreground = getComputedColor(element, 'color');
     const background = getEffectiveBackgroundColor(element);
 
@@ -202,7 +202,7 @@ export class ThemeContrastValidator extends ContrastValidator {
       });
     }
 
-    // Check if element has theme-specific styles
+    
     const hasThemeStyles = this.hasThemeSpecificStyles(element);
     if (!hasThemeStyles) {
       warnings.push({
@@ -221,9 +221,9 @@ export class ThemeContrastValidator extends ContrastValidator {
     };
   }
 
-  /**
-   * Find all elements containing text
-   */
+  
+
+
   findAllTextElements(root: Element): Element[] {
     const textElements: Element[] = [];
     const walker = document.createTreeWalker(
@@ -237,13 +237,13 @@ export class ThemeContrastValidator extends ContrastValidator {
 
           const element = node as Element;
           
-          // Skip hidden elements
+          
           const style = window.getComputedStyle(element);
           if (style.display === 'none' || style.visibility === 'hidden') {
             return NodeFilter.FILTER_SKIP;
           }
 
-          // Check if element contains direct text
+          
           const hasDirectText = Array.from(element.childNodes).some(
             child => child.nodeType === Node.TEXT_NODE && child.textContent?.trim()
           );
@@ -252,7 +252,7 @@ export class ThemeContrastValidator extends ContrastValidator {
             return NodeFilter.FILTER_ACCEPT;
           }
 
-          // Check for pseudo-elements with content
+          
           const before = style.getPropertyValue('content');
           const after = window.getComputedStyle(element, '::after').content;
           
@@ -273,22 +273,22 @@ export class ThemeContrastValidator extends ContrastValidator {
     return textElements;
   }
 
-  /**
-   * Extract theme colors from CSS variables
-   */
+  
+
+
   extractThemeColors(theme: string): ThemeColors | null {
-    // Check cache first
+    
     if (this.themeCache.has(theme)) {
       return this.themeCache.get(theme)!;
     }
 
-    // Apply theme temporarily
+    
     const previousTheme = document.documentElement.getAttribute('data-theme');
     document.documentElement.setAttribute('data-theme', theme);
 
     const computed = window.getComputedStyle(document.documentElement);
     
-    // Common CSS variable patterns
+    
     const colorVars = {
       background: ['--background', '--bg-color', '--color-background'],
       foreground: ['--foreground', '--text-color', '--color-text'],
@@ -317,14 +317,14 @@ export class ThemeContrastValidator extends ContrastValidator {
       }
     }
 
-    // Restore previous theme
+    
     if (previousTheme) {
       document.documentElement.setAttribute('data-theme', previousTheme);
     } else {
       document.documentElement.removeAttribute('data-theme');
     }
 
-    // Only cache if we found enough colors
+    
     if (Object.keys(colors).length >= 4) {
       const themeColors = colors as ThemeColors;
       this.themeCache.set(theme, themeColors);
@@ -334,14 +334,14 @@ export class ThemeContrastValidator extends ContrastValidator {
     return null;
   }
 
-  /**
-   * Check for contrast inversion issues between themes
-   */
+  
+
+
   private checkInversionIssues(
     lightResult: ThemeValidationResult,
     darkResult: ThemeValidationResult
   ): void {
-    // Compare contrast ratios between themes
+    
     for (const [key, lightValidation] of lightResult.results) {
       const darkValidation = darkResult.results.get(key);
       
@@ -350,7 +350,7 @@ export class ThemeContrastValidator extends ContrastValidator {
       const lightRatio = lightValidation.ratio;
       const darkRatio = darkValidation.ratio;
 
-      // Check if one theme passes but the other fails
+      
       if (lightValidation.valid && !darkValidation.valid) {
         darkValidation.warnings.push({
           type: 'theme',
@@ -365,7 +365,7 @@ export class ThemeContrastValidator extends ContrastValidator {
         });
       }
 
-      // Check for significant ratio differences
+      
       if (lightRatio === undefined || darkRatio === undefined) continue;
       const ratioDiff = Math.abs(lightRatio - darkRatio);
       if (ratioDiff > 3) {
@@ -381,11 +381,11 @@ export class ThemeContrastValidator extends ContrastValidator {
     }
   }
 
-  /**
-   * Check if element has theme-specific styles
-   */
+  
+
+
   private hasThemeSpecificStyles(element: Element): boolean {
-    // Get all stylesheets
+    
     const stylesheets = Array.from(document.styleSheets);
     
     for (const sheet of stylesheets) {
@@ -394,12 +394,12 @@ export class ThemeContrastValidator extends ContrastValidator {
         
         for (const rule of rules) {
           if (rule instanceof CSSStyleRule) {
-            // Check if rule includes theme selectors
+            
             if (rule.selectorText.includes('[data-theme') ||
                 rule.selectorText.includes('.theme-') ||
                 rule.selectorText.includes(':root')) {
               
-              // Check if element matches this selector
+              
               if (element.matches(rule.selectorText)) {
                 return true;
               }
@@ -407,7 +407,7 @@ export class ThemeContrastValidator extends ContrastValidator {
           }
         }
       } catch (e) {
-        // Cross-origin stylesheets will throw
+        
         continue;
       }
     }
@@ -415,32 +415,32 @@ export class ThemeContrastValidator extends ContrastValidator {
     return false;
   }
 
-  /**
-   * Validate high contrast mode support
-   */
+  
+
+
   async validateHighContrastMode(
     element: Element,
     options: ExtendedValidationOptions = {}
   ): Promise<ValidationResult> {
-    // Check if browser supports prefers-contrast
+    
     const prefersContrast = window.matchMedia('(prefers-contrast: high)');
     
     if (!prefersContrast.matches) {
-      // Simulate high contrast by checking with higher requirements
+      
       return this.validateElementWithTheme(element, {
         ...options,
-        customRatio: 7, // AAA level
+        customRatio: 7, 
         level: 'AAA'
       });
     }
 
-    // Validate in actual high contrast mode
+    
     return this.validateElementWithTheme(element, options);
   }
 
-  /**
-   * Get required ratio based on options (override from ContrastValidator)
-   */
+  
+
+
   protected override getRequiredRatio(options: ExtendedValidationOptions): number {
     if (options.customRatio) return options.customRatio;
 
@@ -456,17 +456,17 @@ export class ThemeContrastValidator extends ContrastValidator {
     }
   }
 
-  /**
-   * Get effective background color (delegates to contrast utility)
-   */
+  
+
+
   getEffectiveBackgroundColor(element: Element): RGB {
     return getEffectiveBackgroundColor(element);
   }
 }
 
-/**
- * Factory function to create theme validator instance
- */
+
+
+
 export function createThemeContrastValidator(): ThemeContrastValidator {
   return new ThemeContrastValidator();
 }

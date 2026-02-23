@@ -1,9 +1,9 @@
-/**
- * DOM Sampler
- * 
- * Efficient DOM sampling strategies that minimize performance impact
- * while ensuring comprehensive accessibility coverage.
- */
+
+
+
+
+
+
 
 import type {
   SamplingConfig,
@@ -32,13 +32,13 @@ export class DOMSampler extends EventEmitter {
     this.adaptiveInterval = config.interval;
     this.cpuMonitor = new CPUMonitor();
     
-    // Set up sampling based on strategy
+    
     this.initializeSampling();
   }
   
-  /**
-   * Initialize sampling based on configured strategy
-   */
+  
+
+
   private initializeSampling(): void {
     switch (this.config.strategy) {
       case 'fixed':
@@ -58,38 +58,38 @@ export class DOMSampler extends EventEmitter {
         break;
     }
     
-    // Set up common observers
+    
     this.setupObservers();
   }
   
-  /**
-   * Set up fixed interval sampling
-   */
+  
+
+
   private setupFixedSampling(): void {
     this.startSamplingTimer(this.config.interval);
   }
   
-  /**
-   * Set up adaptive sampling that adjusts based on system resources
-   */
+  
+
+
   private setupAdaptiveSampling(): void {
-    // Start with base interval
+    
     this.startSamplingTimer(this.adaptiveInterval);
     
-    // Monitor CPU usage and adjust
+    
     this.cpuMonitor.on('usage', (usage: number) => {
       this.adjustSamplingRate(usage);
     });
     
-    // Monitor memory pressure
+    
     if ('memory' in performance) {
       this.monitorMemoryPressure();
     }
   }
   
-  /**
-   * Set up event-driven sampling
-   */
+  
+
+
   private setupEventDrivenSampling(): void {
     if (!this.config.triggers || this.config.triggers.length === 0) {
       console.warn('Event-driven sampling configured but no triggers specified');
@@ -101,15 +101,15 @@ export class DOMSampler extends EventEmitter {
     });
   }
   
-  /**
-   * Set up hybrid sampling (combines interval and event-driven)
-   */
+  
+
+
   private setupHybridSampling(): void {
-    // Use a longer interval for hybrid mode
+    
     const hybridInterval = this.config.interval * 2;
     this.startSamplingTimer(hybridInterval);
     
-    // Also set up event triggers
+    
     if (this.config.triggers) {
       this.config.triggers.forEach(trigger => {
         this.setupTrigger(trigger);
@@ -117,9 +117,9 @@ export class DOMSampler extends EventEmitter {
     }
   }
   
-  /**
-   * Set up a specific trigger
-   */
+  
+
+
   private setupTrigger(trigger: EvaluationTrigger): void {
     const handler = this.createTriggerHandler(trigger);
     
@@ -150,9 +150,9 @@ export class DOMSampler extends EventEmitter {
     }
   }
   
-  /**
-   * Create trigger handler with debounce/throttle
-   */
+  
+
+
   private createTriggerHandler(trigger: EvaluationTrigger): Function {
     const baseHandler = () => {
       this.emit('sample:triggered', { trigger: trigger.type });
@@ -168,12 +168,12 @@ export class DOMSampler extends EventEmitter {
     return baseHandler;
   }
   
-  /**
-   * Set up scroll trigger
-   */
+  
+
+
   private setupScrollTrigger(handler: Function, trigger: EvaluationTrigger): void {
     const scrollHandler = () => {
-      // Only trigger if scroll is significant
+      
       const scrollThreshold = trigger.options?.threshold || 100;
       const currentScroll = window.scrollY;
       const lastScroll = this.eventHandlers.get('lastScroll') as number || 0;
@@ -188,34 +188,34 @@ export class DOMSampler extends EventEmitter {
     this.eventHandlers.set('scroll', scrollHandler);
   }
   
-  /**
-   * Set up resize trigger
-   */
+  
+
+
   private setupResizeTrigger(handler: Function, trigger: EvaluationTrigger): void {
     if (!this.resizeObserver) {
       this.resizeObserver = new ResizeObserver(() => {
         handler();
       });
       
-      // Observe body for overall page resizes
+      
       this.resizeObserver.observe(document.body);
     }
   }
   
-  /**
-   * Set up mutation trigger
-   */
+  
+
+
   private setupMutationTrigger(handler: Function, trigger: EvaluationTrigger): void {
     const mutationHandler = throttle((mutations: MutationRecord[]) => {
-      // Filter out insignificant mutations
+      
       const significantMutations = mutations.filter(mutation => {
-        // Skip attribute changes to data-* attributes
+        
         if (mutation.type === 'attributes' && 
             mutation.attributeName?.startsWith('data-')) {
           return false;
         }
         
-        // Skip text changes in script/style elements
+        
         if (mutation.type === 'characterData') {
           const parent = mutation.target.parentElement;
           if (parent?.tagName === 'SCRIPT' || parent?.tagName === 'STYLE') {
@@ -231,7 +231,7 @@ export class DOMSampler extends EventEmitter {
       }
     }, trigger.throttle || 500);
     
-    // Set up mutation observers for each region
+    
     const regions = this.config.regions || ['body'];
     regions.forEach((selector, index) => {
       const elements = document.querySelectorAll(selector);
@@ -250,12 +250,12 @@ export class DOMSampler extends EventEmitter {
     });
   }
   
-  /**
-   * Set up focus trigger
-   */
+  
+
+
   private setupFocusTrigger(handler: Function, trigger: EvaluationTrigger): void {
     const focusHandler = (event: FocusEvent) => {
-      // Only trigger for interactive elements
+      
       const target = event.target as Element;
       if (target && this.isInteractiveElement(target)) {
         handler();
@@ -268,11 +268,11 @@ export class DOMSampler extends EventEmitter {
     this.eventHandlers.set('focus', focusHandler);
   }
   
-  /**
-   * Set up theme change trigger
-   */
+  
+
+
   private setupThemeChangeTrigger(handler: Function, trigger: EvaluationTrigger): void {
-    // Watch for class changes on root elements
+    
     const themeObserver = new MutationObserver((mutations) => {
       const hasThemeChange = mutations.some(mutation => {
         return mutation.type === 'attributes' && 
@@ -285,7 +285,7 @@ export class DOMSampler extends EventEmitter {
       }
     });
     
-    // Observe html and body for theme changes
+    
     themeObserver.observe(document.documentElement, {
       attributes: true,
       attributeFilter: ['class', 'data-theme']
@@ -298,19 +298,19 @@ export class DOMSampler extends EventEmitter {
     
     this.observers.set('theme', themeObserver);
     
-    // Also listen for media query changes
+    
     const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
     darkModeQuery.addEventListener('change', () => handler());
   }
   
-  /**
-   * Set up route change trigger
-   */
+  
+
+
   private setupRouteChangeTrigger(handler: Function, trigger: EvaluationTrigger): void {
-    // Listen for popstate (browser navigation)
+    
     window.addEventListener('popstate', () => handler());
     
-    // Override pushState and replaceState
+    
     const originalPushState = history.pushState;
     const originalReplaceState = history.replaceState;
     
@@ -327,22 +327,22 @@ export class DOMSampler extends EventEmitter {
     this.eventHandlers.set('route', handler);
   }
   
-  /**
-   * Set up common observers
-   */
+  
+
+
   private setupObservers(): void {
-    // Intersection observer for viewport visibility
+    
     if (this.config.strategy === 'adaptive' || this.config.strategy === 'hybrid') {
       this.setupIntersectionObserver();
     }
     
-    // Performance observer for monitoring
+    
     this.setupPerformanceObserver();
   }
   
-  /**
-   * Set up intersection observer for viewport tracking
-   */
+  
+
+
   private setupIntersectionObserver(): void {
     const options = {
       root: null,
@@ -359,7 +359,7 @@ export class DOMSampler extends EventEmitter {
           total: entries.length
         });
         
-        // Increase sampling rate when more elements are visible
+        
         if (this.config.strategy === 'adaptive') {
           const visibilityRatio = visibleElements.length / entries.length;
           this.adjustSamplingForVisibility(visibilityRatio);
@@ -367,7 +367,7 @@ export class DOMSampler extends EventEmitter {
       }
     }, options);
     
-    // Observe key elements
+    
     const keyElements = document.querySelectorAll(
       'main, section, article, nav, header, footer, [role="main"], [role="navigation"]'
     );
@@ -377,9 +377,9 @@ export class DOMSampler extends EventEmitter {
     });
   }
   
-  /**
-   * Set up performance observer
-   */
+  
+
+
   private setupPerformanceObserver(): void {
     if ('PerformanceObserver' in window) {
       this.performanceObserver = new PerformanceObserver((list) => {
@@ -397,9 +397,9 @@ export class DOMSampler extends EventEmitter {
     }
   }
   
-  /**
-   * Start sampling timer
-   */
+  
+
+
   private startSamplingTimer(interval: number): void {
     this.stopSamplingTimer();
     
@@ -408,9 +408,9 @@ export class DOMSampler extends EventEmitter {
     }, interval);
   }
   
-  /**
-   * Stop sampling timer
-   */
+  
+
+
   private stopSamplingTimer(): void {
     if (this.samplingTimer) {
       clearInterval(this.samplingTimer);
@@ -418,14 +418,14 @@ export class DOMSampler extends EventEmitter {
     }
   }
   
-  /**
-   * Perform a sample
-   */
+  
+
+
   private performSample(source: string, detail?: string): void {
     const now = Date.now();
     const timeSinceLastSample = now - this.lastSampleTime;
     
-    // Prevent too frequent sampling
+    
     if (timeSinceLastSample < 100) {
       return;
     }
@@ -433,10 +433,10 @@ export class DOMSampler extends EventEmitter {
     this.lastSampleTime = now;
     this.sampleCount++;
     
-    // Get elements to sample
+    
     const elements = this.selectElements();
     
-    // Emit sample event
+    
     this.emit('sample', {
       source,
       detail,
@@ -446,14 +446,14 @@ export class DOMSampler extends EventEmitter {
     });
   }
   
-  /**
-   * Select elements for sampling
-   */
+  
+
+
   private selectElements(): Element[] {
     const elements: Element[] = [];
     const { regions, exclude, maxElements } = this.config;
     
-    // Get elements from specified regions
+    
     if (regions && regions.length > 0) {
       regions.forEach(selector => {
         try {
@@ -464,19 +464,19 @@ export class DOMSampler extends EventEmitter {
         }
       });
     } else {
-      // Default to all elements in body
+      
       const allElements = document.body.querySelectorAll('*');
       elements.push(...Array.from(allElements));
     }
     
-    // Apply exclusions
+    
     let filtered = elements;
     if (exclude && exclude.length > 0) {
       const excludeSelector = exclude.join(',');
       filtered = elements.filter(el => !el.matches(excludeSelector));
     }
     
-    // Prioritize elements if we have a limit
+    
     if (maxElements && filtered.length > maxElements) {
       filtered = this.prioritizeElements(filtered).slice(0, maxElements);
     }
@@ -484,9 +484,9 @@ export class DOMSampler extends EventEmitter {
     return filtered;
   }
   
-  /**
-   * Prioritize elements for sampling
-   */
+  
+
+
   private prioritizeElements(elements: Element[]): Element[] {
     return elements.sort((a, b) => {
       const scoreA = this.calculatePriority(a);
@@ -495,34 +495,34 @@ export class DOMSampler extends EventEmitter {
     });
   }
   
-  /**
-   * Calculate element priority
-   */
+  
+
+
   private calculatePriority(element: Element): number {
     let score = 0;
     
-    // Visible elements
+    
     const rect = element.getBoundingClientRect();
     if (rect.width > 0 && rect.height > 0) {
       score += 20;
     }
     
-    // In viewport
+    
     if (this.isInViewport(element)) {
       score += 30;
     }
     
-    // Interactive elements
+    
     if (this.isInteractiveElement(element)) {
       score += 25;
     }
     
-    // Semantic elements
+    
     if (this.isSemanticElement(element)) {
       score += 15;
     }
     
-    // Has ARIA attributes
+    
     if (this.hasAriaAttributes(element)) {
       score += 10;
     }
@@ -530,9 +530,9 @@ export class DOMSampler extends EventEmitter {
     return score;
   }
   
-  /**
-   * Check if element is in viewport
-   */
+  
+
+
   private isInViewport(element: Element): boolean {
     const rect = element.getBoundingClientRect();
     return (
@@ -543,9 +543,9 @@ export class DOMSampler extends EventEmitter {
     );
   }
   
-  /**
-   * Check if element is interactive
-   */
+  
+
+
   private isInteractiveElement(element: Element): boolean {
     const interactiveSelectors = [
       'a[href]',
@@ -562,9 +562,9 @@ export class DOMSampler extends EventEmitter {
     return element.matches(interactiveSelectors.join(','));
   }
   
-  /**
-   * Check if element is semantic
-   */
+  
+
+
   private isSemanticElement(element: Element): boolean {
     const semanticTags = [
       'HEADER', 'NAV', 'MAIN', 'ARTICLE', 'SECTION',
@@ -574,9 +574,9 @@ export class DOMSampler extends EventEmitter {
     return semanticTags.includes(element.tagName);
   }
   
-  /**
-   * Check if element has ARIA attributes
-   */
+  
+
+
   private hasAriaAttributes(element: Element): boolean {
     const attributes = Array.from(element.attributes);
     return attributes.some(attr => 
@@ -584,24 +584,24 @@ export class DOMSampler extends EventEmitter {
     );
   }
   
-  /**
-   * Adjust sampling rate based on CPU usage
-   */
+  
+
+
   private adjustSamplingRate(cpuUsage: number): void {
     const baseInterval = this.config.interval;
     
     if (cpuUsage > 0.8) {
-      // High CPU usage - slow down sampling
+      
       this.adaptiveInterval = baseInterval * 3;
     } else if (cpuUsage > 0.5) {
-      // Moderate CPU usage
+      
       this.adaptiveInterval = baseInterval * 1.5;
     } else {
-      // Low CPU usage - normal rate
+      
       this.adaptiveInterval = baseInterval;
     }
     
-    // Restart timer with new interval
+    
     if (this.samplingTimer) {
       this.startSamplingTimer(this.adaptiveInterval);
     }
@@ -613,17 +613,17 @@ export class DOMSampler extends EventEmitter {
     });
   }
   
-  /**
-   * Adjust sampling based on visibility
-   */
+  
+
+
   private adjustSamplingForVisibility(visibilityRatio: number): void {
     const baseInterval = this.config.interval;
     
     if (visibilityRatio > 0.7) {
-      // Many elements visible - increase sampling
+      
       this.adaptiveInterval = baseInterval * 0.8;
     } else if (visibilityRatio < 0.3) {
-      // Few elements visible - decrease sampling
+      
       this.adaptiveInterval = baseInterval * 1.2;
     }
     
@@ -632,9 +632,9 @@ export class DOMSampler extends EventEmitter {
     }
   }
   
-  /**
-   * Monitor memory pressure
-   */
+  
+
+
   private monitorMemoryPressure(): void {
     setInterval(() => {
       if ('memory' in performance) {
@@ -642,7 +642,7 @@ export class DOMSampler extends EventEmitter {
         const usageRatio = memory.usedJSHeapSize / memory.jsHeapSizeLimit;
         
         if (usageRatio > 0.9) {
-          // High memory pressure - reduce sampling
+          
           this.emit('memory:pressure', { high: true, ratio: usageRatio });
           this.adaptiveInterval = this.config.interval * 2;
           
@@ -651,12 +651,12 @@ export class DOMSampler extends EventEmitter {
           }
         }
       }
-    }, 30000); // Check every 30 seconds
+    }, 30000); 
   }
   
-  /**
-   * Get sampling statistics
-   */
+  
+
+
   getStats(): {
     sampleCount: number;
     currentInterval: number;
@@ -671,25 +671,25 @@ export class DOMSampler extends EventEmitter {
     };
   }
   
-  /**
-   * Update configuration
-   */
+  
+
+
   updateConfig(config: Partial<SamplingConfig>): void {
     this.config = { ...this.config, ...config };
     
-    // Restart with new configuration
+    
     this.destroy();
     this.initializeSampling();
   }
   
-  /**
-   * Cleanup resources
-   */
+  
+
+
   destroy(): void {
-    // Stop timers
+    
     this.stopSamplingTimer();
     
-    // Disconnect observers
+    
     this.observers.forEach(observer => observer.disconnect());
     this.observers.clear();
     
@@ -705,7 +705,7 @@ export class DOMSampler extends EventEmitter {
       this.performanceObserver.disconnect();
     }
     
-    // Remove event listeners
+    
     this.eventHandlers.forEach((handler, event) => {
       if (event === 'scroll') {
         window.removeEventListener('scroll', handler as EventListener);
@@ -717,16 +717,16 @@ export class DOMSampler extends EventEmitter {
     
     this.eventHandlers.clear();
     
-    // Clean up CPU monitor
+    
     this.cpuMonitor.destroy();
     
     this.removeAllListeners();
   }
 }
 
-/**
- * CPU usage monitor
- */
+
+
+
 class CPUMonitor extends EventEmitter {
   private interval?: number;
   private lastIdleTime = 0;
@@ -738,7 +738,7 @@ class CPUMonitor extends EventEmitter {
   }
   
   private startMonitoring(): void {
-    // Simple CPU monitoring using setTimeout delays
+    
     let lastCheck = performance.now();
     
     this.interval = window.setInterval(() => {
@@ -746,7 +746,7 @@ class CPUMonitor extends EventEmitter {
       const actualDelay = now - lastCheck;
       const expectedDelay = 1000;
       
-      // If actual delay is much higher than expected, CPU is busy
+      
       const cpuLoad = Math.min(1, (actualDelay - expectedDelay) / expectedDelay);
       
       this.emit('usage', cpuLoad);

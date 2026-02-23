@@ -1,6 +1,6 @@
-/**
- * WebSocket-based Streaming Protocol for Accessibility Results
- */
+
+
+
 
 import type { StreamMessage, EvaluationResult } from '../types';
 
@@ -12,7 +12,7 @@ export class StreamingProtocol {
   private url: string;
   private reconnectDelay = 1000;
   private maxReconnectDelay = 30000;
-  private compressionThreshold = 1024; // 1KB
+  private compressionThreshold = 1024; 
   private isReconnecting = false;
   private listeners: Map<string, Set<(data: any) => void>> = new Map();
 
@@ -21,9 +21,9 @@ export class StreamingProtocol {
     this.sessionId = sessionId || this.generateSessionId();
   }
 
-  /**
-   * Connect to WebSocket server
-   */
+  
+
+
   connect(): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
@@ -62,9 +62,9 @@ export class StreamingProtocol {
     });
   }
 
-  /**
-   * Disconnect from WebSocket
-   */
+  
+
+
   disconnect(): void {
     this.isReconnecting = false;
     
@@ -79,9 +79,9 @@ export class StreamingProtocol {
     }
   }
 
-  /**
-   * Send evaluation result
-   */
+  
+
+
   sendResult(result: EvaluationResult): void {
     const message: StreamMessage = {
       type: 'result',
@@ -93,9 +93,9 @@ export class StreamingProtocol {
     this.send(message);
   }
 
-  /**
-   * Send progress update
-   */
+  
+
+
   sendProgress(progress: {
     processed: number;
     total: number;
@@ -111,9 +111,9 @@ export class StreamingProtocol {
     this.send(message);
   }
 
-  /**
-   * Send error
-   */
+  
+
+
   sendError(error: Error): void {
     const message: StreamMessage = {
       type: 'error',
@@ -129,9 +129,9 @@ export class StreamingProtocol {
     this.send(message);
   }
 
-  /**
-   * Send completion signal
-   */
+  
+
+
   sendComplete(summary: any): void {
     const message: StreamMessage = {
       type: 'complete',
@@ -143,9 +143,9 @@ export class StreamingProtocol {
     this.send(message);
   }
 
-  /**
-   * Subscribe to message type
-   */
+  
+
+
   on(type: string, callback: (data: any) => void): void {
     if (!this.listeners.has(type)) {
       this.listeners.set(type, new Set());
@@ -153,16 +153,16 @@ export class StreamingProtocol {
     this.listeners.get(type)!.add(callback);
   }
 
-  /**
-   * Unsubscribe from message type
-   */
+  
+
+
   off(type: string, callback: (data: any) => void): void {
     this.listeners.get(type)?.delete(callback);
   }
 
-  /**
-   * Send message with queuing and compression
-   */
+  
+
+
   private send(message: StreamMessage): void {
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
       this.messageQueue.push(message);
@@ -173,7 +173,7 @@ export class StreamingProtocol {
       const data = JSON.stringify(message);
       
       if (data.length > this.compressionThreshold) {
-        // For large payloads, compress if possible
+        
         this.sendCompressed(message);
       } else {
         this.ws.send(data);
@@ -184,12 +184,12 @@ export class StreamingProtocol {
     }
   }
 
-  /**
-   * Send compressed message
-   */
+  
+
+
   private async sendCompressed(message: StreamMessage): Promise<void> {
     if (!this.ws || !window.CompressionStream) {
-      // Fallback to uncompressed
+      
       this.ws?.send(JSON.stringify(message));
       return;
     }
@@ -216,21 +216,21 @@ export class StreamingProtocol {
       const compressed = new Blob(chunks as BlobPart[]);
       const arrayBuffer = await compressed.arrayBuffer();
 
-      // Send with compression header
+      
       this.ws.send(JSON.stringify({
         ...message,
         _compressed: true,
         _data: btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)))
       }));
     } catch (error) {
-      // Fallback to uncompressed
+      
       this.ws?.send(JSON.stringify(message));
     }
   }
 
-  /**
-   * Handle incoming message
-   */
+  
+
+
   private handleMessage(data: string): void {
     try {
       const message = JSON.parse(data);
@@ -250,9 +250,9 @@ export class StreamingProtocol {
     }
   }
 
-  /**
-   * Schedule reconnection attempt
-   */
+  
+
+
   private scheduleReconnect(): void {
     if (this.isReconnecting || this.reconnectTimer) return;
 
@@ -262,7 +262,7 @@ export class StreamingProtocol {
     this.reconnectTimer = setTimeout(() => {
       this.reconnectTimer = null;
       this.connect().catch(() => {
-        // Exponential backoff
+        
         this.reconnectDelay = Math.min(
           this.reconnectDelay * 2,
           this.maxReconnectDelay
@@ -273,9 +273,9 @@ export class StreamingProtocol {
     }, this.reconnectDelay);
   }
 
-  /**
-   * Flush message queue
-   */
+  
+
+
   private flushQueue(): void {
     while (this.messageQueue.length > 0) {
       const message = this.messageQueue.shift();
@@ -285,23 +285,23 @@ export class StreamingProtocol {
     }
   }
 
-  /**
-   * Generate session ID
-   */
+  
+
+
   private generateSessionId(): string {
     return `a11y-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   }
 
-  /**
-   * Get connection state
-   */
+  
+
+
   get isConnected(): boolean {
     return this.ws?.readyState === WebSocket.OPEN;
   }
 
-  /**
-   * Get queue size
-   */
+  
+
+
   get queueSize(): number {
     return this.messageQueue.length;
   }

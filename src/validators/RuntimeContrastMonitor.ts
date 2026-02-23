@@ -1,7 +1,7 @@
-/**
- * Runtime Contrast Monitor
- * Real-time contrast validation and monitoring for dynamic content
- */
+
+
+
+
 
 import {
   type RGB,
@@ -60,9 +60,9 @@ export interface MonitorStats {
   violationsByType: Map<string, number>;
 }
 
-/**
- * Monitors contrast violations in real-time
- */
+
+
+
 export class RuntimeContrastMonitor {
   private validator: ContrastValidator;
   private themeValidator: ThemeContrastValidator;
@@ -104,18 +104,18 @@ export class RuntimeContrastMonitor {
     };
   }
 
-  /**
-   * Start monitoring
-   */
+  
+
+
   start(root: Element = document.body): void {
     if (this.observer) {
       this.stop();
     }
 
-    // Initial scan
+    
     this.scanElement(root);
 
-    // Set up mutation observer
+    
     this.observer = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
         if (mutation.type === 'attributes') {
@@ -124,7 +124,7 @@ export class RuntimeContrastMonitor {
             this.queueCheck(target);
           }
         } else if (mutation.type === 'childList') {
-          // Check added nodes
+          
           mutation.addedNodes.forEach(node => {
             if (node.nodeType === Node.ELEMENT_NODE) {
               this.scanElement(node as Element);
@@ -141,7 +141,7 @@ export class RuntimeContrastMonitor {
       subtree: this.options.observeSubtree
     });
 
-    // Set up resize observer for responsive changes
+    
     this.resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
         if (this.shouldCheckElement(entry.target as Element)) {
@@ -150,7 +150,7 @@ export class RuntimeContrastMonitor {
       }
     });
 
-    // Set up intersection observer for lazy-loaded content
+    
     this.intersectionObserver = new IntersectionObserver((entries) => {
       for (const entry of entries) {
         if (entry.isIntersecting && this.shouldCheckElement(entry.target as Element)) {
@@ -161,14 +161,14 @@ export class RuntimeContrastMonitor {
       rootMargin: '50px'
     });
 
-    // Observe all text-containing elements
+    
     const textElements = this.themeValidator.findAllTextElements(root);
     textElements.forEach(el => {
       this.resizeObserver?.observe(el);
       this.intersectionObserver?.observe(el);
     });
 
-    // Listen for theme changes
+    
     if (window.matchMedia) {
       window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
         this.scanElement(root);
@@ -179,15 +179,15 @@ export class RuntimeContrastMonitor {
       });
     }
 
-    // Report stats periodically
+    
     setInterval(() => {
       this.reportStats();
-    }, 60000); // Every minute
+    }, 60000); 
   }
 
-  /**
-   * Stop monitoring
-   */
+  
+
+
   stop(): void {
     this.observer?.disconnect();
     this.observer = null;
@@ -203,15 +203,15 @@ export class RuntimeContrastMonitor {
       this.checkTimer = null;
     }
 
-    // Send any remaining reports
+    
     if (this.reportBuffer.length > 0) {
       this.flushReports();
     }
   }
 
-  /**
-   * Scan element and its children for violations
-   */
+  
+
+
   private scanElement(element: Element): void {
     const textElements = this.themeValidator.findAllTextElements(element);
     
@@ -219,15 +219,15 @@ export class RuntimeContrastMonitor {
       this.checkElement(el);
     }
 
-    // Also check the element itself if it contains text
+    
     if (this.shouldCheckElement(element)) {
       this.checkElement(element);
     }
   }
 
-  /**
-   * Queue element for checking (throttled)
-   */
+  
+
+
   private queueCheck(element: Element): void {
     this.checkQueue.add(element);
     
@@ -238,16 +238,16 @@ export class RuntimeContrastMonitor {
     }
   }
 
-  /**
-   * Process queued checks
-   */
+  
+
+
   private processQueue(): void {
     const startTime = performance.now();
-    const maxTime = 16; // Stay under frame budget
+    const maxTime = 16; 
     
     for (const element of this.checkQueue) {
       if (performance.now() - startTime > maxTime) {
-        // Continue in next frame
+        
         this.checkTimer = requestAnimationFrame(() => {
           this.processQueue();
         });
@@ -261,11 +261,11 @@ export class RuntimeContrastMonitor {
     this.checkTimer = null;
   }
 
-  /**
-   * Check individual element for contrast violations
-   */
+  
+
+
   private checkElement(element: Element): void {
-    // Skip if recently checked
+    
     const cached = this.violationCache.get(element);
     if (cached && Date.now() - cached.timestamp < this.options.throttleMs) {
       return;
@@ -296,14 +296,14 @@ export class RuntimeContrastMonitor {
       this.violationCache.set(element, violation);
       this.stats.violationsFound++;
       
-      // Update stats by type
+      
       const componentType = this.getComponentType(element);
       this.stats.violationsByType.set(
         componentType,
         (this.stats.violationsByType.get(componentType) || 0) + 1
       );
 
-      // Handle violation
+      
       if (this.options.autoFix) {
         this.attemptAutoFix(element, violation);
       }
@@ -322,9 +322,9 @@ export class RuntimeContrastMonitor {
     }
   }
 
-  /**
-   * Create violation report
-   */
+  
+
+
   private createViolationReport(
     element: Element,
     ratio: number,
@@ -360,15 +360,15 @@ export class RuntimeContrastMonitor {
     };
   }
 
-  /**
-   * Attempt to automatically fix contrast issues
-   */
+  
+
+
   private attemptAutoFix(element: Element, violation: ViolationReport): void {
     if (!violation.suggested) return;
 
     try {
       if (element instanceof HTMLElement) {
-        // Apply inline styles temporarily
+        
         const originalColor = element.style.color;
         const originalBg = element.style.backgroundColor;
         
@@ -382,11 +382,11 @@ export class RuntimeContrastMonitor {
           element.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
         }
 
-        // Mark as fixed
+        
         element.setAttribute('data-contrast-fixed', 'true');
         this.stats.violationsFixed++;
 
-        // Log the fix
+        
         if (this.options.reportToConsole) {
           console.log('Contrast auto-fixed:', {
             element: violation.selector,
@@ -403,9 +403,9 @@ export class RuntimeContrastMonitor {
     }
   }
 
-  /**
-   * Get suggested colors that meet contrast requirements
-   */
+  
+
+
   private getSuggestedColors(
     foreground: RGB,
     background: RGB,
@@ -417,19 +417,19 @@ export class RuntimeContrastMonitor {
       return undefined;
     }
 
-    // Try darkening foreground
+    
     const darkerFg = this.adjustBrightness(foreground, 0.8);
     if (checkContrast(darkerFg, background).ratio >= requiredRatio) {
       return { foreground: darkerFg };
     }
 
-    // Try lightening background
+    
     const lighterBg = this.adjustBrightness(background, 1.2);
     if (checkContrast(foreground, lighterBg).ratio >= requiredRatio) {
       return { background: lighterBg };
     }
 
-    // Try both
+    
     if (checkContrast(darkerFg, lighterBg).ratio >= requiredRatio) {
       return { foreground: darkerFg, background: lighterBg };
     }
@@ -437,9 +437,9 @@ export class RuntimeContrastMonitor {
     return undefined;
   }
 
-  /**
-   * Adjust color brightness
-   */
+  
+
+
   private adjustBrightness(color: RGB, factor: number): RGB {
     return {
       r: Math.min(255, Math.max(0, Math.round(color.r * factor))),
@@ -449,9 +449,9 @@ export class RuntimeContrastMonitor {
     };
   }
 
-  /**
-   * Log violation to console
-   */
+  
+
+
   private logViolation(violation: ViolationReport): void {
     if (!this.options.reportToConsole) return;
 
@@ -470,9 +470,9 @@ export class RuntimeContrastMonitor {
     );
   }
 
-  /**
-   * Send violation reports to server
-   */
+  
+
+
   private async flushReports(): Promise<void> {
     if (!this.options.reportToServer || this.reportBuffer.length === 0) {
       return;
@@ -490,7 +490,7 @@ export class RuntimeContrastMonitor {
         body: JSON.stringify({
           reports: reports.map(r => ({
             ...r,
-            element: undefined // Don't send DOM references
+            element: undefined 
           }))
         })
       });
@@ -503,16 +503,16 @@ export class RuntimeContrastMonitor {
     }
   }
 
-  /**
-   * Get current statistics
-   */
+  
+
+
   getStats(): MonitorStats {
     return { ...this.stats };
   }
 
-  /**
-   * Report statistics
-   */
+  
+
+
   private reportStats(): void {
     const runtime = Date.now() - this.stats.startTime;
     const minutes = Math.floor(runtime / 60000);
@@ -532,17 +532,17 @@ export class RuntimeContrastMonitor {
     }
   }
 
-  /**
-   * Determine if element should be checked
-   */
+  
+
+
   private shouldCheckElement(element: Element): boolean {
-    // Skip hidden elements
+    
     const style = window.getComputedStyle(element);
     if (style.display === 'none' || style.visibility === 'hidden') {
       return false;
     }
 
-    // Skip elements with no text content
+    
     const hasText = element.textContent?.trim() || 
       style.content !== 'none' ||
       element.getAttribute('aria-label');
@@ -550,9 +550,9 @@ export class RuntimeContrastMonitor {
     return !!hasText;
   }
 
-  /**
-   * Get element selector
-   */
+  
+
+
   private getElementSelector(element: Element): string {
     const tag = element.tagName.toLowerCase();
     const id = element.id ? `#${element.id}` : '';
@@ -562,9 +562,9 @@ export class RuntimeContrastMonitor {
     return `${tag}${id}${classes}`;
   }
 
-  /**
-   * Get component type
-   */
+  
+
+
   private getComponentType(element: Element): string {
     const tag = element.tagName.toLowerCase();
     const role = element.getAttribute('role');
@@ -592,32 +592,32 @@ export class RuntimeContrastMonitor {
     }
   }
 
-  /**
-   * Get required contrast ratio
-   */
+  
+
+
   private getRequiredRatio(element: Element): number {
     const componentType = this.getComponentType(element);
     const fontSize = parseFloat(window.getComputedStyle(element).fontSize);
     const fontWeight = window.getComputedStyle(element).fontWeight;
     
-    // Large text
+    
     if (fontSize >= 18 || (fontSize >= 14 && parseInt(fontWeight) >= 700)) {
       return this.options.wcagLevel === 'AAA' ? 4.5 : 3;
     }
     
-    // UI components
+    
     if (['button', 'link', 'form-control'].includes(componentType)) {
       return 3;
     }
     
-    // Regular text
+    
     return this.options.wcagLevel === 'AAA' ? 7 : 4.5;
   }
 }
 
-/**
- * Factory function with auto-start
- */
+
+
+
 export function createContrastMonitor(
   options?: MonitorOptions,
   autoStart = true

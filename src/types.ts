@@ -1,4 +1,4 @@
-// Color types for accessibility testing
+
 export interface RGB {
   r: number;
   g: number;
@@ -9,13 +9,13 @@ export interface RGBA extends RGB {
   a: number;
 }
 
-// Theme types
+
 export interface Theme {
   mode: 'light' | 'dark';
   variant: 'default' | 'high-contrast' | 'colorblind-safe';
 }
 
-// Component state types
+
 export interface ComponentState {
   disabled?: boolean;
   loading?: boolean;
@@ -27,7 +27,7 @@ export interface ComponentState {
   readonly?: boolean;
 }
 
-// Core accessibility event types
+
 export interface AccessibilityEvent {
   type: string;
   timestamp: number;
@@ -76,9 +76,9 @@ export interface EvaluationPlugin {
   destroy?: () => void;
 }
 
-/**
- * Partial result returned by rules - engine adds id, timestamp, selector etc.
- */
+
+
+
 export interface RuleResult {
   severity: 'error' | 'warning' | 'info';
   message: string;
@@ -119,7 +119,7 @@ export interface MemoryStats {
   pressure: 'low' | 'medium' | 'high' | 'critical';
 }
 
-// Accessibility evaluation types
+
 export interface EvaluationResult {
   id: string;
   timestamp?: number;
@@ -187,12 +187,12 @@ export interface SamplingStrategy {
 
 export interface StreamMessage {
   type: 'evaluation' | 'heartbeat' | 'config' | 'error' | 'result' | 'progress' | 'complete';
-  /** Unique message identifier */
+  
   id?: string;
   timestamp: number;
-  /** Legacy data field */
+  
   data?: any;
-  /** Payload field (alias for data) */
+  
   payload?: any;
   compressed?: boolean;
   sessionId?: string;
@@ -202,7 +202,7 @@ export interface EvaluationConfig {
   enabled: boolean;
   samplingStrategy: SamplingStrategy;
   streamingEnabled: boolean;
-  /** Endpoint URL for streaming client (defaults to window.location.origin) */
+  
   streamingEndpoint?: string;
   batchSize: number;
   batchInterval: number;
@@ -220,7 +220,7 @@ export interface EvaluationStats {
   memoryUsageMB: number;
 }
 
-// Batch evaluation result containing multiple issues
+
 export interface BatchEvaluationResult {
   id: string;
   startTime: number;
@@ -236,7 +236,7 @@ export interface BatchEvaluationResult {
   };
 }
 
-// Performance metrics for evaluation
+
 export interface PerformanceMetrics {
   duration: number;
   elementsEvaluated: number;
@@ -246,7 +246,7 @@ export interface PerformanceMetrics {
   workerUtilization: number;
 }
 
-// Streaming types
+
 export interface EvaluationBatch {
   sequence: number;
   issues: AccessibilityIssue[];
@@ -281,7 +281,7 @@ export interface ErrorData {
   retryAfter?: number;
 }
 
-// Sampling configuration
+
 export interface SamplingConfig {
   strategy: 'fixed' | 'adaptive' | 'event-driven' | 'hybrid';
   interval: number;
@@ -298,7 +298,7 @@ export interface EvaluationTrigger {
   options?: Record<string, any>;
 }
 
-// Custom rule type for evaluation engine
+
 export interface CustomRule {
   id: string;
   severity: 'critical' | 'serious' | 'moderate' | 'minor';
@@ -306,9 +306,9 @@ export interface CustomRule {
   evaluate: (element: Element, context: any) => Promise<{ passed: boolean; violation?: any }>;
 }
 
-/**
- * Queue for managing batched accessibility evaluations
- */
+
+
+
 export interface EvaluationQueue {
   id: string;
   elements: Element[];
@@ -329,41 +329,41 @@ export interface EvaluationQueueItem {
   error?: Error;
 }
 
-/**
- * Main accessibility configuration object
- */
+
+
+
 export interface AccessibilityConfig {
-  /** WebSocket endpoint for streaming results */
+  
   endpoint: string;
-  /** Authentication token for WebSocket */
+  
   authToken?: string;
-  /** Evaluation settings */
+  
   evaluation: {
-    /** WCAG version (2.1 or 2.2) */
+    
     wcag: '2.1' | '2.2';
-    /** WCAG conformance level */
+    
     level: 'A' | 'AA' | 'AAA';
-    /** Custom rules to register */
+    
     customRules?: CustomRule[];
   };
-  /** Sampling configuration */
+  
   sampling: SamplingConfig;
-  /** Performance settings */
+  
   performance: {
-    /** Use web workers for evaluation */
+    
     useWorkers: boolean;
-    /** Maximum number of workers */
+    
     maxWorkers?: number;
-    /** Batch size for processing */
+    
     batchSize?: number;
-    /** Compression mode for streaming */
+    
     compression?: 'none' | 'gzip' | 'deflate';
   };
-  /** Privacy settings */
+  
   privacy: {
-    /** Redact text content in reports */
+    
     redactText: boolean;
-    /** Attributes to exclude from reports */
+    
     excludeAttributes?: string[];
   };
 }

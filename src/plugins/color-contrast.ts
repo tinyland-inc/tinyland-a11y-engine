@@ -1,7 +1,7 @@
-/**
- * Color Contrast Plugin
- * Checks text color contrast ratios
- */
+
+
+
+
 
 import type { EvaluationPlugin } from '../types';
 
@@ -19,7 +19,7 @@ const plugin: EvaluationPlugin = {
       wcagCriteria: ['1.4.3'],
       selector: '*',
       condition: (element: Element) => {
-        // Only check elements with text content
+        
         const text = element.textContent?.trim();
         return !!text && element.children.length === 0;
       },
@@ -29,16 +29,16 @@ const plugin: EvaluationPlugin = {
         const fontWeight = styles.fontWeight;
         const isLargeText = fontSize >= 18 || (fontSize >= 14 && fontWeight === 'bold');
         
-        // Get colors
+        
         const fgColor = styles.color;
         const bgColor = styles.backgroundColor;
         
-        // Skip if colors are not set or transparent
+        
         if (!fgColor || !bgColor || bgColor === 'transparent') {
           return null;
         }
         
-        // Calculate contrast ratio (simplified)
+        
         const ratio = getContrastRatio(fgColor, bgColor);
         const requiredRatio = isLargeText ? 3 : 4.5;
         
@@ -64,11 +64,11 @@ const plugin: EvaluationPlugin = {
   ]
 };
 
-// Simplified contrast ratio calculation
+
 function getContrastRatio(fg: string, bg: string): number {
-  // This is a placeholder - real implementation would parse colors
-  // and calculate actual luminance values
-  return 5; // Mock value
+  
+  
+  return 5; 
 }
 
 export default plugin;

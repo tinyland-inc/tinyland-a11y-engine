@@ -1,20 +1,20 @@
-/**
- * WCAG Contrast Ratio Calculations
- * Implements WCAG 2.1 algorithms for color contrast validation
- */
+
+
+
+
 
 export interface RGB {
-  r: number; // 0-255
-  g: number; // 0-255
-  b: number; // 0-255
-  a?: number; // 0-1 (alpha)
+  r: number; 
+  g: number; 
+  b: number; 
+  a?: number; 
 }
 
 export interface HSL {
-  h: number; // 0-360
-  s: number; // 0-100
-  l: number; // 0-100
-  a?: number; // 0-1
+  h: number; 
+  s: number; 
+  l: number; 
+  a?: number; 
 }
 
 export interface ContrastResult {
@@ -26,9 +26,9 @@ export interface ContrastResult {
   passesUIComponent: boolean;
 }
 
-/**
- * Convert hex color to RGB
- */
+
+
+
 export function hexToRgb(hex: string): RGB {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})?$/i.exec(hex);
   if (!result) {
@@ -43,9 +43,9 @@ export function hexToRgb(hex: string): RGB {
   };
 }
 
-/**
- * Convert RGB to hex
- */
+
+
+
 export function rgbToHex(rgb: RGB): string {
   const toHex = (n: number) => {
     const hex = Math.round(n).toString(16);
@@ -59,9 +59,9 @@ export function rgbToHex(rgb: RGB): string {
   return hex;
 }
 
-/**
- * Convert RGB to HSL
- */
+
+
+
 export function rgbToHsl(rgb: RGB): HSL {
   const r = rgb.r / 255;
   const g = rgb.g / 255;
@@ -101,9 +101,9 @@ export function rgbToHsl(rgb: RGB): HSL {
   };
 }
 
-/**
- * Convert HSL to RGB
- */
+
+
+
 export function hslToRgb(hsl: HSL): RGB {
   const h = hsl.h / 360;
   const s = hsl.s / 100;
@@ -134,10 +134,10 @@ export function hslToRgb(hsl: HSL): RGB {
   };
 }
 
-/**
- * Calculate relative luminance of a color (WCAG formula)
- * https://www.w3.org/TR/WCAG21/#dfn-relative-luminance
- */
+
+
+
+
 export function getRelativeLuminance(rgb: RGB): number {
   const toLinearRGB = (value: number): number => {
     const sRGB = value / 255;
@@ -153,12 +153,12 @@ export function getRelativeLuminance(rgb: RGB): number {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
-/**
- * Calculate contrast ratio between two colors
- * https://www.w3.org/TR/WCAG21/#dfn-contrast-ratio
- */
+
+
+
+
 export function getContrastRatio(foreground: RGB, background: RGB): number {
-  // Handle transparency by alpha blending
+  
   const fg = foreground.a !== undefined && foreground.a < 1
     ? alphaBlend(foreground, background)
     : foreground;
@@ -172,9 +172,9 @@ export function getContrastRatio(foreground: RGB, background: RGB): number {
   return (lighter + 0.05) / (darker + 0.05);
 }
 
-/**
- * Alpha blend two colors (for transparency calculations)
- */
+
+
+
 export function alphaBlend(foreground: RGB, background: RGB): RGB {
   const alpha = foreground.a ?? 1;
   const invAlpha = 1 - alpha;
@@ -187,9 +187,9 @@ export function alphaBlend(foreground: RGB, background: RGB): RGB {
   };
 }
 
-/**
- * Check if contrast ratio meets WCAG standards
- */
+
+
+
 export function checkContrast(foreground: RGB, background: RGB): ContrastResult {
   const ratio = getContrastRatio(foreground, background);
   
@@ -203,13 +203,13 @@ export function checkContrast(foreground: RGB, background: RGB): ContrastResult 
   };
 }
 
-/**
- * Extract color from CSS string (supports hex, rgb, rgba, hsl, hsla)
- */
+
+
+
 export function parseColor(color: string): RGB | null {
   if (!color) return null;
   
-  // Hex colors
+  
   if (color.startsWith('#')) {
     try {
       return hexToRgb(color);
@@ -218,7 +218,7 @@ export function parseColor(color: string): RGB | null {
     }
   }
   
-  // RGB/RGBA
+  
   const rgbMatch = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
   if (rgbMatch) {
     return {
@@ -229,7 +229,7 @@ export function parseColor(color: string): RGB | null {
     };
   }
   
-  // HSL/HSLA
+  
   const hslMatch = color.match(/hsla?\((\d+),\s*([\d.]+)%,\s*([\d.]+)%(?:,\s*([\d.]+))?\)/);
   if (hslMatch) {
     const hsl: HSL = {
@@ -241,16 +241,16 @@ export function parseColor(color: string): RGB | null {
     return hslToRgb(hsl);
   }
   
-  // Named colors
+  
   return getNamedColor(color);
 }
 
-/**
- * Get RGB values for CSS named colors
- */
+
+
+
 function getNamedColor(name: string): RGB | null {
   const namedColors: Record<string, RGB> = {
-    // Basic colors
+    
     black: { r: 0, g: 0, b: 0 },
     white: { r: 255, g: 255, b: 255 },
     red: { r: 255, g: 0, b: 0 },
@@ -260,7 +260,7 @@ function getNamedColor(name: string): RGB | null {
     cyan: { r: 0, g: 255, b: 255 },
     magenta: { r: 255, g: 0, b: 255 },
     
-    // Grays
+    
     gray: { r: 128, g: 128, b: 128 },
     grey: { r: 128, g: 128, b: 128 },
     darkgray: { r: 169, g: 169, b: 169 },
@@ -268,32 +268,32 @@ function getNamedColor(name: string): RGB | null {
     lightgray: { r: 211, g: 211, b: 211 },
     lightgrey: { r: 211, g: 211, b: 211 },
     
-    // Common colors
+    
     navy: { r: 0, g: 0, b: 128 },
     olive: { r: 128, g: 128, b: 0 },
     teal: { r: 0, g: 128, b: 128 },
     purple: { r: 128, g: 0, b: 128 },
     maroon: { r: 128, g: 0, b: 0 },
     
-    // Add more as needed
+    
     transparent: { r: 0, g: 0, b: 0, a: 0 }
   };
   
   return namedColors[name.toLowerCase()] || null;
 }
 
-/**
- * Get computed color from DOM element
- */
+
+
+
 export function getComputedColor(element: Element, property: 'color' | 'background-color'): RGB | null {
   const computed = window.getComputedStyle(element);
   const color = computed.getPropertyValue(property);
   return parseColor(color);
 }
 
-/**
- * Find effective background color by traversing up the DOM
- */
+
+
+
 export function getEffectiveBackgroundColor(element: Element): RGB {
   let current: Element | null = element;
   const blendStack: RGB[] = [];
@@ -302,17 +302,17 @@ export function getEffectiveBackgroundColor(element: Element): RGB {
     const bg = getComputedColor(current, 'background-color');
     if (bg && (bg.a === undefined || bg.a > 0)) {
       blendStack.push(bg);
-      if (bg.a === 1) break; // Opaque color found
+      if (bg.a === 1) break; 
     }
     current = current.parentElement;
   }
   
-  // Default to white if no background found
+  
   if (blendStack.length === 0) {
     return { r: 255, g: 255, b: 255, a: 1 };
   }
   
-  // Blend all semi-transparent backgrounds
+  
   let result = blendStack[blendStack.length - 1];
   for (let i = blendStack.length - 2; i >= 0; i--) {
     result = alphaBlend(blendStack[i], result);
@@ -321,11 +321,11 @@ export function getEffectiveBackgroundColor(element: Element): RGB {
   return result;
 }
 
-/**
- * Simulate color blindness
- */
+
+
+
 export function simulateColorBlindness(rgb: RGB, type: 'protanopia' | 'deuteranopia' | 'tritanopia'): RGB {
-  // Conversion matrices for different types of color blindness
+  
   const matrices = {
     protanopia: [
       [0.567, 0.433, 0],
@@ -357,11 +357,11 @@ export function simulateColorBlindness(rgb: RGB, type: 'protanopia' | 'deuterano
   };
 }
 
-/**
- * Calculate perceived brightness (for determining if color is light or dark)
- */
+
+
+
 export function getPerceivedBrightness(rgb: RGB): number {
-  // Using HSP color model for perceived brightness
+  
   return Math.sqrt(
     0.299 * Math.pow(rgb.r, 2) +
     0.587 * Math.pow(rgb.g, 2) +
@@ -369,26 +369,26 @@ export function getPerceivedBrightness(rgb: RGB): number {
   );
 }
 
-/**
- * Determine if a color is perceived as light or dark
- */
+
+
+
 export function isLightColor(rgb: RGB): boolean {
   return getPerceivedBrightness(rgb) > 127.5;
 }
 
-/**
- * Generate a contrasting color for text on a given background
- */
+
+
+
 export function getContrastingColor(background: RGB, preferDark = true): RGB {
   const isLight = isLightColor(background);
   
   if (isLight && preferDark) {
-    return { r: 0, g: 0, b: 0 }; // Black
+    return { r: 0, g: 0, b: 0 }; 
   } else if (!isLight && !preferDark) {
-    return { r: 255, g: 255, b: 255 }; // White
+    return { r: 255, g: 255, b: 255 }; 
   } else if (isLight) {
-    return { r: 255, g: 255, b: 255 }; // White
+    return { r: 255, g: 255, b: 255 }; 
   } else {
-    return { r: 0, g: 0, b: 0 }; // Black
+    return { r: 0, g: 0, b: 0 }; 
   }
 }

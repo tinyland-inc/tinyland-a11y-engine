@@ -1,7 +1,7 @@
-/**
- * ARIA Validator Plugin
- * Validates ARIA attributes and roles
- */
+
+
+
+
 
 import type { EvaluationPlugin } from '../types';
 

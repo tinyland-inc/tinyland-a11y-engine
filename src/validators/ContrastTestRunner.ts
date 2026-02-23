@@ -1,7 +1,7 @@
-/**
- * Contrast Test Runner
- * Comprehensive testing utilities for contrast validation
- */
+
+
+
+
 
 import {
   type RGB,
@@ -18,7 +18,7 @@ import type {
 
 import { ContrastValidator, type ExtendedValidationOptions } from './ContrastValidator.js';
 
-// Use ExtendedValidationOptions for ContrastTestRunner
+
 type ValidationOptions = ExtendedValidationOptions;
 import { ThemeContrastValidator } from './ThemeContrastValidator.js';
 
@@ -74,9 +74,9 @@ export interface CoverageReport {
   colorBlindnessChecked: boolean;
 }
 
-/**
- * Runs comprehensive contrast validation tests
- */
+
+
+
 export class ContrastTestRunner {
   private validator: ContrastValidator;
   private themeValidator: ThemeContrastValidator;
@@ -88,32 +88,32 @@ export class ContrastTestRunner {
     this.coverage = this.initCoverage();
   }
 
-  /**
-   * Run a test suite
-   */
+  
+
+
   async runSuite(suite: ContrastTestSuite): Promise<TestRunResult> {
     const startTime = performance.now();
     const results: TestCaseResult[] = [];
     
-    // Setup
+    
     if (suite.setup) {
       await suite.setup();
     }
 
-    // Run tests
+    
     for (const test of suite.tests) {
       const result = await this.runTest(test);
       results.push(result);
     }
 
-    // Teardown
+    
     if (suite.teardown) {
       await suite.teardown();
     }
 
     const endTime = performance.now();
     
-    // Calculate summary
+    
     const passed = results.filter(r => r.passed && !r.skipped).length;
     const failed = results.filter(r => !r.passed && !r.skipped).length;
     const skipped = results.filter(r => r.skipped).length;
@@ -129,26 +129,26 @@ export class ContrastTestRunner {
     };
   }
 
-  /**
-   * Run a single test case
-   */
+  
+
+
   private async runTest(test: ContrastTestCase): Promise<TestCaseResult> {
     const startTime = performance.now();
     const failures: string[] = [];
     
     try {
-      // Get element to test
+      
       const element = test.element || 
         (test.selector ? document.querySelector(test.selector) : null);
 
       let validation: ValidationResult;
 
       if (element) {
-        // Test actual DOM element
+        
         validation = await this.validateElement(element, test.options);
         this.updateCoverage(element, validation, test.options);
       } else if (test.foreground && test.background) {
-        // Test color pair
+        
         validation = this.validateColors(test.foreground, test.background, test.options);
       } else {
         return {
@@ -160,7 +160,7 @@ export class ContrastTestRunner {
         };
       }
 
-      // Check expectations
+      
       if (test.expected) {
         if (test.expected.valid !== undefined && validation.valid !== test.expected.valid) {
           failures.push(
@@ -205,18 +205,18 @@ export class ContrastTestRunner {
     }
   }
 
-  /**
-   * Validate element with extended options
-   */
+  
+
+
   private async validateElement(
     element: Element,
     options?: ValidationOptions
   ): Promise<ValidationResult> {
-    // Determine element type
+    
     const tagName = element.tagName.toLowerCase();
     const role = element.getAttribute('role');
 
-    // Handle different element types
+    
     if (element instanceof HTMLInputElement || 
         element instanceof HTMLTextAreaElement ||
         element instanceof HTMLSelectElement) {
@@ -230,13 +230,13 @@ export class ContrastTestRunner {
       return this.validator.validateSVGContrast(element, background, options);
     }
 
-    // Check for gradient backgrounds
+    
     const bgImage = window.getComputedStyle(element).backgroundImage;
     if (bgImage && bgImage !== 'none' && bgImage.includes('gradient')) {
       return this.validator.validateGradientContrast(element, options);
     }
 
-    // Check for image backgrounds
+    
     if (bgImage && bgImage !== 'none' && bgImage.includes('url(')) {
       const urlMatch = bgImage.match(/url\(['"]?([^'"]+)['"]?\)/);
       if (urlMatch) {
@@ -244,13 +244,13 @@ export class ContrastTestRunner {
       }
     }
 
-    // Default validation
+    
     return this.validator.validateElementContrast(element, options);
   }
 
-  /**
-   * Validate color pair
-   */
+  
+
+
   private validateColors(
     foreground: string | RGB,
     background: string | RGB,
@@ -290,7 +290,7 @@ export class ContrastTestRunner {
       });
     }
 
-    // Check color blindness if requested
+    
     if (options?.includeColorBlindness) {
       const types: Array<'protanopia' | 'deuteranopia' | 'tritanopia'> = 
         ['protanopia', 'deuteranopia', 'tritanopia'];
@@ -319,9 +319,9 @@ export class ContrastTestRunner {
     };
   }
 
-  /**
-   * Run automated page scan
-   */
+  
+
+
   async scanPage(options?: {
     root?: Element;
     themes?: Array<'light' | 'dark' | 'high-contrast'>;
@@ -331,21 +331,21 @@ export class ContrastTestRunner {
     const root = options?.root || document.body;
     const results = new Map<Element, ValidationResult>();
 
-    // Find all text elements
+    
     const textElements = this.themeValidator.findAllTextElements(root);
     
-    // Find all interactive elements
+    
     const interactiveElements = root.querySelectorAll(
       'button, a, input, textarea, select, [role="button"], [role="link"], [tabindex]'
     );
 
-    // Find all elements with background images
+    
     const imageElements = Array.from(root.querySelectorAll('*')).filter(el => {
       const bg = window.getComputedStyle(el).backgroundImage;
       return bg && bg !== 'none';
     });
 
-    // Test all elements
+    
     const allElements = new Set([
       ...textElements,
       ...interactiveElements,
@@ -365,16 +365,16 @@ export class ContrastTestRunner {
     return results;
   }
 
-  /**
-   * Generate test report
-   */
+  
+
+
   generateReport(results: TestRunResult[]): string {
     const report: string[] = [];
     
     report.push('# Contrast Validation Test Report');
     report.push(`Generated: ${new Date().toISOString()}\n`);
 
-    // Summary
+    
     const totalPassed = results.reduce((sum, r) => sum + r.passed, 0);
     const totalFailed = results.reduce((sum, r) => sum + r.failed, 0);
     const totalSkipped = results.reduce((sum, r) => sum + r.skipped, 0);
@@ -387,7 +387,7 @@ export class ContrastTestRunner {
     report.push(`- Skipped: ${totalSkipped} ⏭️`);
     report.push(`- Duration: ${totalDuration.toFixed(2)}ms\n`);
 
-    // Coverage
+    
     if (results.length > 0) {
       const coverage = results[0].coverage;
       report.push('## Coverage');
@@ -400,7 +400,7 @@ export class ContrastTestRunner {
       report.push(`- Color Blindness: ${coverage.colorBlindnessChecked ? 'Yes' : 'No'}\n`);
     }
 
-    // Detailed results
+    
     report.push('## Test Results');
     
     for (const suite of results) {
@@ -447,9 +447,9 @@ export class ContrastTestRunner {
     return report.join('\n');
   }
 
-  /**
-   * Update coverage metrics
-   */
+  
+
+
   private updateCoverage(
     element: Element,
     validation: ValidationResult,
@@ -463,24 +463,24 @@ export class ContrastTestRunner {
       this.coverage.elementsFailed++;
     }
 
-    // Track component type
+    
     const tagName = element.tagName.toLowerCase();
     this.coverage.componentsChecked.add(tagName);
 
-    // Track WCAG level
+    
     if (options?.level) {
       this.coverage.wcagLevels.add(options.level);
     }
 
-    // Track color blindness testing
+    
     if (options?.includeColorBlindness) {
       this.coverage.colorBlindnessChecked = true;
     }
   }
 
-  /**
-   * Initialize coverage report
-   */
+  
+
+
   private initCoverage(): CoverageReport {
     return {
       elementsChecked: 0,
@@ -493,9 +493,9 @@ export class ContrastTestRunner {
     };
   }
 
-  /**
-   * Get required ratio based on options
-   */
+  
+
+
   private getRequiredRatio(options?: ValidationOptions): number {
     if (options?.customRatio) return options.customRatio;
 
@@ -512,9 +512,9 @@ export class ContrastTestRunner {
   }
 }
 
-/**
- * Create standard test suites
- */
+
+
+
 export function createStandardTestSuites(): ContrastTestSuite[] {
   return [
     {

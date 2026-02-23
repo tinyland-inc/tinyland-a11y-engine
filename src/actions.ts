@@ -1,7 +1,7 @@
-/**
- * Svelte Actions for Runtime Contrast Validation
- * Provides reactive contrast checking with visual feedback
- */
+
+
+
+
 
 import type { Action } from 'svelte/action';
 import {
@@ -12,9 +12,9 @@ import {
 } from './validators.js';
 import { getEffectiveBackgroundColor, type RGB, rgbToHex, getContrastRatio, hexToRgb } from './contrast.js';
 
-/**
- * Validate contrast for an HTML element by extracting its computed styles
- */
+
+
+
 function validateElementContrast(
   element: HTMLElement,
   options: ValidationOptions = {}
@@ -30,54 +30,54 @@ function validateElementContrast(
   });
 }
 
-// Re-export ValidationOptions from validators for dependent modules
+
 export type { ValidationOptions } from './validators.js';
 
 export interface ContrastActionOptions extends ValidationOptions {
-  /**
-   * Show visual indicators for validation results
-   */
+  
+
+
   showIndicators?: boolean;
   
-  /**
-   * Automatically fix contrast issues if possible
-   */
+  
+
+
   autoFix?: boolean;
   
-  /**
-   * Callback when validation state changes
-   */
+  
+
+
   onValidate?: (result: ValidationResult) => void;
   
-  /**
-   * Check contrast on these events
-   */
+  
+
+
   checkOn?: string[];
   
-  /**
-   * Debounce validation checks (ms)
-   */
+  
+
+
   debounce?: number;
   
-  /**
-   * CSS class to add when validation fails
-   */
+  
+
+
   errorClass?: string;
   
-  /**
-   * CSS class to add when validation passes
-   */
+  
+
+
   successClass?: string;
   
-  /**
-   * Show detailed report on hover
-   */
+  
+
+
   showReportOnHover?: boolean;
 }
 
-/**
- * Svelte action for real-time contrast validation
- */
+
+
+
 export const contrastCheck: Action<HTMLElement, ContrastActionOptions> = (
   node: HTMLElement,
   options: ContrastActionOptions = {}
@@ -98,7 +98,7 @@ export const contrastCheck: Action<HTMLElement, ContrastActionOptions> = (
   let validationTimeout: number | null = null;
   let observer: MutationObserver | null = null;
   
-  // Create visual indicator
+  
   const createIndicator = () => {
     if (!showIndicators) return;
     
@@ -122,7 +122,7 @@ export const contrastCheck: Action<HTMLElement, ContrastActionOptions> = (
       transition: all 0.2s ease;
     `;
     
-    // Position relative to node
+    
     const position = node.style.position;
     if (!position || position === 'static') {
       node.style.position = 'relative';
@@ -131,7 +131,7 @@ export const contrastCheck: Action<HTMLElement, ContrastActionOptions> = (
     node.appendChild(indicatorElement);
   };
   
-  // Create detailed report tooltip
+  
   const createReport = (result: ValidationResult) => {
     if (!showReportOnHover || !indicatorElement) return;
     
@@ -167,7 +167,7 @@ export const contrastCheck: Action<HTMLElement, ContrastActionOptions> = (
     reportElement.innerHTML = content;
     indicatorElement.appendChild(reportElement);
     
-    // Show on hover
+    
     indicatorElement.style.pointerEvents = 'auto';
     indicatorElement.addEventListener('mouseenter', () => {
       if (reportElement) reportElement.style.opacity = '1';
@@ -177,7 +177,7 @@ export const contrastCheck: Action<HTMLElement, ContrastActionOptions> = (
     });
   };
   
-  // Update indicator based on validation result
+  
   const updateIndicator = (result: ValidationResult) => {
     if (!indicatorElement) return;
     
@@ -193,7 +193,7 @@ export const contrastCheck: Action<HTMLElement, ContrastActionOptions> = (
       indicatorElement.setAttribute('aria-label', `Contrast check failed: ${result.errors[0] || 'Unknown error'}`);
     }
     
-    // Update report if exists
+    
     if (reportElement) {
       reportElement.remove();
       reportElement = null;
@@ -201,64 +201,64 @@ export const contrastCheck: Action<HTMLElement, ContrastActionOptions> = (
     createReport(result);
   };
   
-  // Auto-fix contrast issues
+  
   const applyAutoFix = (result: ValidationResult) => {
     if (!autoFix || result.valid) return;
     
     const background = getEffectiveBackgroundColor(node);
     const currentColor = window.getComputedStyle(node).color;
     
-    // Try to adjust text color to meet contrast requirements
+    
     const targetRatio = options.largeText ? 3 : 4.5;
     
-    // Simple fix: make text darker or lighter
+    
     const isDarkBg = (background.r + background.g + background.b) / 3 < 128;
     
     if (isDarkBg) {
-      // Use white text on dark background
+      
       node.style.color = '#ffffff';
     } else {
-      // Use black text on light background
+      
       node.style.color = '#000000';
     }
     
-    // Re-validate after fix
+    
     setTimeout(() => validate(), 50);
   };
   
-  // Perform validation
+  
   const validate = () => {
     const result = validateElementContrast(node, options);
     
-    // Update classes
+    
     node.classList.toggle(errorClass, !result.valid);
     node.classList.toggle(successClass, result.valid);
     
-    // Update indicator
+    
     updateIndicator(result);
     
-    // Apply auto-fix if needed
+    
     applyAutoFix(result);
     
-    // Call callback
+    
     onValidate?.(result);
   };
   
-  // Debounced validation
+  
   const debouncedValidate = () => {
     if (validationTimeout) clearTimeout(validationTimeout);
     validationTimeout = window.setTimeout(validate, debounce);
   };
   
-  // Set up event listeners
+  
   const handleResize = () => debouncedValidate();
   const handleMutation = () => debouncedValidate();
   
-  // Initialize
+  
   createIndicator();
   
   if (checkOn.includes('load')) {
-    // Initial validation
+    
     setTimeout(validate, 0);
   }
   
@@ -276,7 +276,7 @@ export const contrastCheck: Action<HTMLElement, ContrastActionOptions> = (
     });
   }
   
-  // Cleanup
+  
   return {
     update(newOptions: ContrastActionOptions) {
       Object.assign(options, newOptions);
@@ -290,15 +290,15 @@ export const contrastCheck: Action<HTMLElement, ContrastActionOptions> = (
       
       window.removeEventListener('resize', handleResize);
       
-      // Remove classes
+      
       node.classList.remove(errorClass, successClass);
     }
   };
 };
 
-/**
- * Action for validating focus indicators
- */
+
+
+
 export const focusCheck: Action<HTMLElement, ValidationOptions> = (
   node: HTMLElement,
   options: ValidationOptions = {}
@@ -365,9 +365,9 @@ export const focusCheck: Action<HTMLElement, ValidationOptions> = (
   };
 };
 
-/**
- * Action for validating hover states
- */
+
+
+
 export const hoverCheck: Action<HTMLElement, ValidationOptions> = (
   node: HTMLElement,
   options: ValidationOptions = {}
@@ -375,7 +375,7 @@ export const hoverCheck: Action<HTMLElement, ValidationOptions> = (
   let timeoutId: number | null = null;
   
   const validate = () => {
-    // Use element contrast validation for hover state
+    
     const result = validateElementContrast(node, options);
 
     if (!result.valid) {
@@ -406,9 +406,9 @@ export const hoverCheck: Action<HTMLElement, ValidationOptions> = (
   };
 };
 
-/**
- * Combined action for all contrast checks
- */
+
+
+
 export const accessibilityCheck: Action<HTMLElement, {
   contrast?: ContrastActionOptions | false;
   focus?: ValidationOptions | false;
@@ -438,9 +438,9 @@ export const accessibilityCheck: Action<HTMLElement, {
   };
 };
 
-/**
- * Global contrast monitoring action
- */
+
+
+
 export const contrastMonitor: Action<HTMLElement, {
   selector?: string;
   options?: ValidationOptions;
@@ -478,24 +478,24 @@ export const contrastMonitor: Action<HTMLElement, {
       }
     });
     
-    // Log summary
+    
     console.log(`Contrast Check Summary: ${passCount} passed, ${failCount} failed`);
     
-    // Dispatch custom event
+    
     node.dispatchEvent(new CustomEvent('contrastReport', {
       detail: { results, passCount, failCount }
     }));
   };
   
-  // Initial check
+  
   checkAllElements();
   
-  // Set up periodic checks
+  
   if (reportInterval > 0) {
     intervalId = window.setInterval(checkAllElements, reportInterval);
   }
   
-  // Monitor DOM changes
+  
   observer = new MutationObserver(() => {
     checkAllElements();
   });
@@ -512,7 +512,7 @@ export const contrastMonitor: Action<HTMLElement, {
       if (intervalId) clearInterval(intervalId);
       if (observer) observer.disconnect();
       
-      // Clean up data attributes
+      
       const elements = node.querySelectorAll('[data-contrast-error]');
       elements.forEach(el => el.removeAttribute('data-contrast-error'));
     }

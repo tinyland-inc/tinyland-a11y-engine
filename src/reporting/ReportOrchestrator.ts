@@ -5,17 +5,17 @@ import type { AccessibilityTestResult } from './types';
 import { writeFileSync, mkdirSync } from 'fs';
 import { join } from 'path';
 
-/**
- * Optional logger interface for external logging integrations (e.g., Loki).
- * Consumers can provide their own implementation when instantiating the orchestrator.
- */
+
+
+
+
 export interface A11yLogger {
   summary(data: Record<string, unknown>): void;
   aria(message: string, data: Record<string, unknown>): void;
   contrast(message: string, data: Record<string, unknown>): void;
 }
 
-/** No-op logger used when no external logger is provided */
+
 const noopLogger: A11yLogger = {
   summary: () => {},
   aria: () => {},
@@ -63,10 +63,10 @@ export class ReportOrchestrator {
       summary: this.generateSummary(results)
     };
 
-    // Ensure output directory exists
+    
     mkdirSync(config.outputDir, { recursive: true });
 
-    // Generate reports in requested formats
+    
     if (config.formats.includes('html')) {
       const htmlReport = this.generateHtmlReport(results, timestamp);
       const htmlPath = join(config.outputDir, `accessibility-report-${timestamp.getTime()}.html`);
@@ -80,7 +80,7 @@ export class ReportOrchestrator {
       writeFileSync(jsonPath, JSON.stringify(jsonReport, null, 2));
       outputs.paths.json = jsonPath;
 
-      // Also generate CI/CD report
+      
       const cicdReport = this.jsonGenerator.generateCICDReport(results);
       const cicdPath = join(config.outputDir, `accessibility-ci-report-${timestamp.getTime()}.json`);
       writeFileSync(cicdPath, JSON.stringify(cicdReport, null, 2));
@@ -94,17 +94,17 @@ export class ReportOrchestrator {
       outputs.paths.markdown = markdownPath;
     }
 
-    // Send to Loki if configured
+    
     if (config.sendToLoki) {
       await this.sendToLoki(results, outputs.summary);
     }
 
-    // GitHub integration
+    
     if (config.githubIntegration?.enabled && config.githubIntegration.prNumber) {
       await this.postGitHubComment(results, config.githubIntegration);
     }
 
-    // Slack integration
+    
     if (config.slackIntegration?.enabled && config.slackIntegration.webhookUrl) {
       await this.sendSlackNotification(outputs.summary, config.slackIntegration);
     }
@@ -136,7 +136,7 @@ export class ReportOrchestrator {
     const byComponent = new Map<string, number>();
 
     results.forEach(result => {
-      // Theme stats
+      
       const themeStats = byTheme.get(result.theme) || { passed: 0, failed: 0 };
       if (result.axeResults.violations.length === 0) {
         themeStats.passed++;
@@ -145,7 +145,7 @@ export class ReportOrchestrator {
       }
       byTheme.set(result.theme, themeStats);
 
-      // Route stats
+      
       const routeStats = byRoute.get(result.route) || { passed: 0, failed: 0 };
       if (result.axeResults.violations.length === 0) {
         routeStats.passed++;
@@ -154,17 +154,17 @@ export class ReportOrchestrator {
       }
       byRoute.set(result.route, routeStats);
 
-      // Count issues by severity
+      
       result.axeResults.violations.forEach(violation => {
         const impact = violation.impact || 'minor';
         if (impact === 'critical') criticalIssues += violation.nodes.length;
         else if (impact === 'serious') majorIssues += violation.nodes.length;
         else minorIssues += violation.nodes.length;
 
-        // Component stats
+        
         violation.nodes.forEach(node => {
           const target = node.target[0];
-          // Handle different selector types (string or CrossTreeSelector/ShadowDomSelector)
+          
           const selector = typeof target === 'string' ? target : String(target);
           const component = selector.split(/[#\.\[\s]/)[0];
           byComponent.set(component, (byComponent.get(component) || 0) + 1);
@@ -186,7 +186,7 @@ export class ReportOrchestrator {
   }
 
   private async sendToLoki(results: AccessibilityTestResult[], summary: any) {
-    // Log overall summary
+    
     this.logger.summary({
       totalElements: results.reduce((sum, r) => sum + (r.axeResults.passes.length + r.axeResults.violations.length), 0),
       evaluatedElements: results.reduce((sum, r) => sum + r.axeResults.violations.length, 0),
@@ -196,7 +196,7 @@ export class ReportOrchestrator {
       sessionId: `report-${Date.now()}`
     });
 
-    // Log individual violations
+    
     results.forEach(result => {
       result.axeResults.violations.forEach(violation => {
         violation.nodes.forEach(node => {
@@ -217,7 +217,7 @@ export class ReportOrchestrator {
         });
       });
 
-      // Log contrast failures
+      
       result.contrastResults
         .filter(c => !c.meetsAA)
         .forEach(contrast => {
@@ -245,7 +245,7 @@ export class ReportOrchestrator {
   private async postGitHubComment(results: AccessibilityTestResult[], config: any) {
     const comment = this.markdownGenerator.generatePRComment(results);
 
-    // In a real implementation, this would use the GitHub API
+    
     console.log(`Would post GitHub comment to PR #${config.prNumber}:`, comment);
   }
 
@@ -289,7 +289,7 @@ export class ReportOrchestrator {
       });
     }
 
-    // In a real implementation, this would send to Slack webhook
+    
     console.log('Would send Slack notification:', message);
   }
 }

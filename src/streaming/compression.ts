@@ -1,6 +1,6 @@
-/**
- * Compressor - Stub module for message compression
- */
+
+
+
 
 export type CompressionMode = 'none' | 'gzip' | 'deflate';
 
@@ -16,7 +16,7 @@ export class Compressor {
       return data;
     }
 
-    // Use native CompressionStream if available
+    
     if (typeof CompressionStream !== 'undefined' && this.mode === 'gzip') {
       const encoder = new TextEncoder();
       const input = encoder.encode(data);
@@ -53,7 +53,7 @@ export class Compressor {
       return data;
     }
 
-    // Stub: return empty string for non-string data
+    
     const decoder = new TextDecoder();
     return decoder.decode(data);
   }

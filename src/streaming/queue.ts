@@ -1,6 +1,6 @@
-/**
- * Message Queue - Stub module for message queuing
- */
+
+
+
 
 import type { StreamMessage } from '../types';
 
@@ -14,7 +14,7 @@ export class MessageQueue {
 
   enqueue(message: StreamMessage): void {
     if (this.queue.length >= this.maxSize) {
-      this.queue.shift(); // Remove oldest
+      this.queue.shift(); 
     }
     this.queue.push(message);
   }

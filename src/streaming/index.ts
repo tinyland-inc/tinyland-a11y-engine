@@ -1,9 +1,9 @@
-/**
- * Streaming Protocol Handler
- * 
- * Manages WebSocket connections for streaming accessibility evaluation results
- * with automatic reconnection, batching, and compression support.
- */
+
+
+
+
+
+
 
 import type {
   AccessibilityConfig,
@@ -43,29 +43,29 @@ export class StreamingProtocol extends EventEmitter {
     this.reconnectStrategy = new ReconnectStrategy();
   }
   
-  /**
-   * Connect to the streaming endpoint
-   */
+  
+
+
   async connect(): Promise<void> {
     if (this.isConnected) return;
     
     try {
-      // Build WebSocket URL with auth
+      
       const url = this.buildConnectionUrl();
       
-      // Create WebSocket connection
+      
       this.ws = new WebSocket(url);
       
-      // Set up event handlers
+      
       this.setupWebSocketHandlers();
       
-      // Wait for connection
+      
       await this.waitForConnection();
       
-      // Start heartbeat
+      
       this.startHeartbeat();
       
-      // Process queued messages
+      
       this.processQueue();
       
     } catch (error) {
@@ -75,33 +75,33 @@ export class StreamingProtocol extends EventEmitter {
         error
       });
       
-      // Attempt reconnection
+      
       this.scheduleReconnect();
       throw error;
     }
   }
   
-  /**
-   * Build WebSocket connection URL
-   */
+  
+
+
   private buildConnectionUrl(): string {
     const url = new URL(this.config.endpoint);
     
-    // Add auth token if provided
+    
     if (this.config.authToken) {
       url.searchParams.set('token', this.config.authToken);
     }
     
-    // Add client metadata
+    
     url.searchParams.set('client', 'accessibility-stream');
     url.searchParams.set('version', '1.0.0');
     
     return url.toString();
   }
   
-  /**
-   * Set up WebSocket event handlers
-   */
+  
+
+
   private setupWebSocketHandlers(): void {
     if (!this.ws) return;
     
@@ -116,7 +116,7 @@ export class StreamingProtocol extends EventEmitter {
       this.stopHeartbeat();
       this.emit('disconnected', { code: event.code, reason: event.reason });
       
-      // Reconnect if not intentional close
+      
       if (event.code !== 1000) {
         this.scheduleReconnect();
       }
@@ -144,9 +144,9 @@ export class StreamingProtocol extends EventEmitter {
     };
   }
   
-  /**
-   * Wait for connection to establish
-   */
+  
+
+
   private waitForConnection(): Promise<void> {
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
@@ -169,20 +169,20 @@ export class StreamingProtocol extends EventEmitter {
     });
   }
   
-  /**
-   * Parse incoming message
-   */
+  
+
+
   private async parseMessage(data: string | ArrayBuffer): Promise<StreamMessage> {
-    // Decompress if needed
+    
     const decompressed = await this.compressor.decompress(data);
     
-    // Parse JSON
+    
     return JSON.parse(decompressed);
   }
   
-  /**
-   * Handle incoming message
-   */
+  
+
+
   private handleMessage(message: StreamMessage): void {
     switch (message.type) {
       case 'config':
@@ -194,7 +194,7 @@ export class StreamingProtocol extends EventEmitter {
         break;
         
       case 'heartbeat':
-        // Server heartbeat acknowledgment
+        
         break;
         
       default:
@@ -202,9 +202,9 @@ export class StreamingProtocol extends EventEmitter {
     }
   }
   
-  /**
-   * Handle configuration update
-   */
+  
+
+
   private handleConfigUpdate(update: ConfigUpdate): void {
     this.emit('config-changed', update);
     
@@ -213,9 +213,9 @@ export class StreamingProtocol extends EventEmitter {
     }
   }
   
-  /**
-   * Handle error message
-   */
+  
+
+
   private handleError(error: ErrorData): void {
     this.emit('error', error);
     
@@ -226,18 +226,18 @@ export class StreamingProtocol extends EventEmitter {
     }
   }
   
-  /**
-   * Start heartbeat interval
-   */
+  
+
+
   private startHeartbeat(): void {
     this.heartbeatInterval = window.setInterval(() => {
       this.sendHeartbeat();
-    }, 30000); // 30 seconds
+    }, 30000); 
   }
   
-  /**
-   * Stop heartbeat interval
-   */
+  
+
+
   private stopHeartbeat(): void {
     if (this.heartbeatInterval) {
       clearInterval(this.heartbeatInterval);
@@ -245,9 +245,9 @@ export class StreamingProtocol extends EventEmitter {
     }
   }
   
-  /**
-   * Send heartbeat message
-   */
+  
+
+
   private sendHeartbeat(): void {
     const heartbeat: HeartbeatData = {
       health: this.getStreamHealth(),
@@ -264,26 +264,26 @@ export class StreamingProtocol extends EventEmitter {
     });
   }
   
-  /**
-   * Get stream health status
-   */
+  
+
+
   private getStreamHealth(): 'healthy' | 'degraded' | 'unhealthy' {
     if (!this.isConnected) return 'unhealthy';
     if (this.queue.size() > 100) return 'degraded';
     return 'healthy';
   }
   
-  /**
-   * Get configuration hash
-   */
+  
+
+
   private getConfigHash(): string {
-    // Simple hash of config for change detection
+    
     return btoa(JSON.stringify(this.config)).substring(0, 8);
   }
   
-  /**
-   * Schedule reconnection attempt
-   */
+  
+
+
   private scheduleReconnect(): void {
     const delay = this.reconnectStrategy.getNextDelay();
     
@@ -296,40 +296,40 @@ export class StreamingProtocol extends EventEmitter {
     }
   }
   
-  /**
-   * Send accessibility issues
-   */
+  
+
+
   async sendIssues(issues: AccessibilityIssue[]): Promise<void> {
-    // Add to batch buffer
+    
     this.batchBuffer.push(...issues);
     
-    // Clear existing timer
+    
     if (this.batchTimer) {
       clearTimeout(this.batchTimer);
     }
     
-    // Check if we should send immediately
+    
     if (this.batchBuffer.length >= (this.config.performance.batchSize || 50)) {
       await this.flushBatch();
     } else {
-      // Schedule batch send
+      
       this.batchTimer = window.setTimeout(() => {
         this.flushBatch();
-      }, 100); // 100ms batching window
+      }, 100); 
     }
   }
   
-  /**
-   * Flush the current batch
-   */
+  
+
+
   private async flushBatch(): Promise<void> {
     if (this.batchBuffer.length === 0) return;
     
-    // Take current batch
+    
     const issues = [...this.batchBuffer];
     this.batchBuffer = [];
     
-    // Create batch message
+    
     const batch: EvaluationBatch = {
       sequence: ++this.sequenceNumber,
       issues,
@@ -337,7 +337,7 @@ export class StreamingProtocol extends EventEmitter {
       metrics: this.createBatchMetrics()
     };
     
-    // Send or queue
+    
     const message: StreamMessage = {
       type: 'evaluation',
       id: this.generateMessageId(),
@@ -352,9 +352,9 @@ export class StreamingProtocol extends EventEmitter {
     }
   }
   
-  /**
-   * Create batch summary
-   */
+  
+
+
   private createBatchSummary(issues: AccessibilityIssue[]): BatchSummary {
     const bySeverity: any = {};
     const byType: any = {};
@@ -369,15 +369,15 @@ export class StreamingProtocol extends EventEmitter {
       bySeverity,
       byType,
       newIssues: issues.filter(i => i.metadata?.occurrences === 1).length,
-      resolvedIssues: 0 // TODO: Track resolved issues
+      resolvedIssues: 0 
     };
   }
   
-  /**
-   * Create batch metrics
-   */
+  
+
+
   private createBatchMetrics(): PerformanceMetrics {
-    // TODO: Get actual metrics from evaluation engine
+    
     return {
       duration: 0,
       elementsEvaluated: 0,
@@ -388,9 +388,9 @@ export class StreamingProtocol extends EventEmitter {
     };
   }
   
-  /**
-   * Send message through WebSocket
-   */
+  
+
+
   private async sendMessage(message: StreamMessage): Promise<void> {
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
       this.queue.enqueue(message);
@@ -398,10 +398,10 @@ export class StreamingProtocol extends EventEmitter {
     }
     
     try {
-      // Compress message
+      
       const compressed = await this.compressor.compress(JSON.stringify(message));
       
-      // Send through WebSocket
+      
       this.ws.send(compressed);
       this.messagesSent++;
       
@@ -414,14 +414,14 @@ export class StreamingProtocol extends EventEmitter {
         error
       });
       
-      // Queue for retry
+      
       this.queue.enqueue(message);
     }
   }
   
-  /**
-   * Process queued messages
-   */
+  
+
+
   private async processQueue(): Promise<void> {
     if (!this.isConnected) return;
     
@@ -430,30 +430,30 @@ export class StreamingProtocol extends EventEmitter {
       if (message) {
         await this.sendMessage(message);
         
-        // Small delay between messages
+        
         await new Promise(resolve => setTimeout(resolve, 10));
       }
     }
   }
   
-  /**
-   * Generate unique message ID
-   */
+  
+
+
   private generateMessageId(): string {
     return `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   }
   
-  /**
-   * Reconnect to streaming endpoint
-   */
+  
+
+
   async reconnect(): Promise<void> {
     this.disconnect();
     await this.connect();
   }
   
-  /**
-   * Disconnect from streaming endpoint
-   */
+  
+
+
   disconnect(): void {
     this.isConnected = false;
     this.stopHeartbeat();
@@ -466,9 +466,9 @@ export class StreamingProtocol extends EventEmitter {
     this.emit('disconnected', { code: 1000, reason: 'Normal closure' });
   }
   
-  /**
-   * Get connection status
-   */
+  
+
+
   getStatus(): {
     connected: boolean;
     queueSize: number;
@@ -483,9 +483,9 @@ export class StreamingProtocol extends EventEmitter {
     };
   }
   
-  /**
-   * Cleanup resources
-   */
+  
+
+
   destroy(): void {
     this.disconnect();
     this.queue.clear();

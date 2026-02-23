@@ -1,9 +1,9 @@
-/**
- * Core Evaluation Engine
- * 
- * This module provides the main evaluation engine that orchestrates
- * accessibility checks across the DOM using a plugin-based architecture.
- */
+
+
+
+
+
+
 
 import type {
   AccessibilityConfig,
@@ -34,12 +34,12 @@ export class EvaluationEngine extends EventEmitter {
     this.monitor = new PerformanceMonitor(config.performance);
     this.contextBuilder = new ContextBuilder();
     
-    // Initialize worker pool if enabled
+    
     if (config.performance.useWorkers) {
       this.workerPool = new WorkerPool(config.performance.maxWorkers || 4);
     }
     
-    // Register custom rules if provided
+    
     if (config.evaluation.customRules) {
       config.evaluation.customRules.forEach(rule => {
         this.registry.register(rule);
@@ -47,33 +47,33 @@ export class EvaluationEngine extends EventEmitter {
     }
   }
   
-  /**
-   * Evaluate accessibility for the current page state
-   */
+  
+
+
   async evaluate(elements?: Element[]): Promise<BatchEvaluationResult> {
     const startTime = performance.now();
     const id = `eval-${++this.evaluationId}-${Date.now()}`;
     
     try {
-      // Start performance monitoring
+      
       this.monitor.start(id);
       
-      // Build evaluation context
+      
       const context = await this.contextBuilder.build(this.config, elements);
       
-      // Get elements to evaluate
+      
       const targetElements = elements || this.selectElements(context);
       
-      // Apply privacy settings
+      
       const sanitizedElements = this.applyPrivacy(targetElements);
       
-      // Evaluate rules
+      
       const issues = await this.evaluateRules(sanitizedElements, context);
       
-      // Get performance metrics
+      
       const metrics = this.monitor.stop(id);
       
-      // Build result
+      
       const result: BatchEvaluationResult = {
         id,
         startTime,
@@ -89,7 +89,7 @@ export class EvaluationEngine extends EventEmitter {
         }
       };
       
-      // Emit completion event
+      
       this.emit('evaluation:complete', result);
       
       return result;
@@ -101,34 +101,34 @@ export class EvaluationEngine extends EventEmitter {
     }
   }
   
-  /**
-   * Select elements based on configuration
-   */
+  
+
+
   private selectElements(context: EvaluationContext): Element[] {
     const { sampling } = this.config;
     const elements: Element[] = [];
     
-    // Focus on specified regions
+    
     if (sampling.regions && sampling.regions.length > 0) {
       sampling.regions.forEach(selector => {
         const regionElements = context.document.querySelectorAll(selector);
         elements.push(...Array.from(regionElements));
       });
     } else {
-      // Select all elements in body
+      
       const allElements = context.document.body.querySelectorAll('*');
       elements.push(...Array.from(allElements));
     }
     
-    // Apply exclusions
+    
     if (sampling.exclude && sampling.exclude.length > 0) {
       const excludeSelectors = sampling.exclude.join(',');
       return elements.filter(el => !el.matches(excludeSelectors));
     }
     
-    // Apply max elements limit
+    
     if (sampling.maxElements && elements.length > sampling.maxElements) {
-      // Prioritize visible and interactive elements
+      
       const prioritized = this.prioritizeElements(elements, context);
       return prioritized.slice(0, sampling.maxElements);
     }
@@ -136,9 +136,9 @@ export class EvaluationEngine extends EventEmitter {
     return elements;
   }
   
-  /**
-   * Prioritize elements for evaluation
-   */
+  
+
+
   private prioritizeElements(elements: Element[], context: EvaluationContext): Element[] {
     return elements.sort((a, b) => {
       const scoreA = this.getElementPriority(a, context);
@@ -147,32 +147,32 @@ export class EvaluationEngine extends EventEmitter {
     });
   }
   
-  /**
-   * Calculate element priority score
-   */
+  
+
+
   private getElementPriority(element: Element, context: EvaluationContext): number {
     let score = 0;
     
-    // Visible elements get higher priority
+    
     const rect = element.getBoundingClientRect();
     if (rect.width > 0 && rect.height > 0) score += 10;
     
-    // Interactive elements
+    
     if (element.matches('a, button, input, select, textarea, [role="button"], [tabindex]')) {
       score += 20;
     }
     
-    // Headings and landmarks
+    
     if (element.matches('h1, h2, h3, h4, h5, h6, main, nav, header, footer, article, section')) {
       score += 15;
     }
     
-    // Elements with ARIA
+    
     if (element.hasAttribute('role') || element.hasAttribute('aria-label')) {
       score += 10;
     }
     
-    // In viewport
+    
     if (this.isInViewport(element, context.window)) {
       score += 25;
     }
@@ -180,9 +180,9 @@ export class EvaluationEngine extends EventEmitter {
     return score;
   }
   
-  /**
-   * Check if element is in viewport
-   */
+  
+
+
   private isInViewport(element: Element, window: Window): boolean {
     const rect = element.getBoundingClientRect();
     return (
@@ -193,9 +193,9 @@ export class EvaluationEngine extends EventEmitter {
     );
   }
   
-  /**
-   * Apply privacy settings to elements
-   */
+  
+
+
   private applyPrivacy(elements: Element[]): Element[] {
     const { privacy } = this.config;
     
@@ -203,16 +203,16 @@ export class EvaluationEngine extends EventEmitter {
       return elements;
     }
     
-    // Clone elements for privacy
+    
     return elements.map(el => {
       const clone = el.cloneNode(true) as Element;
       
-      // Redact text content if needed
+      
       if (privacy.redactText) {
         this.redactTextContent(clone);
       }
       
-      // Remove excluded attributes
+      
       if (privacy.excludeAttributes) {
         privacy.excludeAttributes.forEach(attr => {
           clone.removeAttribute(attr);
@@ -223,9 +223,9 @@ export class EvaluationEngine extends EventEmitter {
     });
   }
   
-  /**
-   * Redact text content while preserving structure
-   */
+  
+
+
   private redactTextContent(element: Element): void {
     const walker = document.createTreeWalker(
       element,
@@ -241,9 +241,9 @@ export class EvaluationEngine extends EventEmitter {
     }
   }
   
-  /**
-   * Evaluate rules against elements
-   */
+  
+
+
   private async evaluateRules(
     elements: Element[],
     context: EvaluationContext
@@ -251,12 +251,12 @@ export class EvaluationEngine extends EventEmitter {
     const issues: AccessibilityIssue[] = [];
     const rules = this.registry.getActiveRules();
     
-    // Use worker pool if available
+    
     if (this.workerPool && this.config.performance.useWorkers) {
       return this.evaluateWithWorkers(elements, rules, context);
     }
     
-    // Evaluate synchronously
+    
     for (const element of elements) {
       for (const rule of rules) {
         try {
@@ -274,15 +274,15 @@ export class EvaluationEngine extends EventEmitter {
     return issues;
   }
   
-  /**
-   * Evaluate using worker pool
-   */
+  
+
+
   private async evaluateWithWorkers(
     elements: Element[],
     rules: CustomRule[],
     context: EvaluationContext
   ): Promise<AccessibilityIssue[]> {
-    // Serialize elements and context for workers
+    
     const tasks = elements.flatMap(element =>
       rules.map(rule => ({
         element: this.serializeElement(element),
@@ -291,19 +291,19 @@ export class EvaluationEngine extends EventEmitter {
       }))
     );
     
-    // Process in batches
+    
     const batchSize = this.config.performance.batchSize || 100;
     const results = await this.workerPool!.processBatches(tasks, batchSize);
     
-    // Convert results to issues
+    
     return results
       .filter(r => !r.passed && r.violation)
       .map(r => this.createIssueFromWorkerResult(r));
   }
   
-  /**
-   * Serialize element for worker
-   */
+  
+
+
   private serializeElement(element: Element): any {
     return {
       tagName: element.tagName,
@@ -317,20 +317,20 @@ export class EvaluationEngine extends EventEmitter {
     };
   }
   
-  /**
-   * Serialize context for worker
-   */
+  
+
+
   private serializeContext(context: EvaluationContext): any {
     return {
-      // Only serialize what workers need
+      
       wcagVersion: this.config.evaluation.wcag,
       wcagLevel: this.config.evaluation.level
     };
   }
   
-  /**
-   * Create issue from element and rule
-   */
+  
+
+
   private createIssue(
     element: Element,
     rule: CustomRule,
@@ -339,7 +339,7 @@ export class EvaluationEngine extends EventEmitter {
     const id = `issue-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     const issueType = this.inferIssueType(rule);
 
-    // Map rule severity to AccessibilityIssue severity
+    
     const severityMap: Record<string, 'error' | 'warning' | 'info'> = {
       critical: 'error',
       serious: 'error',
@@ -373,9 +373,9 @@ export class EvaluationEngine extends EventEmitter {
     };
   }
 
-  /**
-   * Get element reference for issue reporting
-   */
+  
+
+
   private getElementReference(element: Element): { selector: string; tagName: string; attributes: Record<string, string>; text: string; bounds: DOMRect } {
     return {
       selector: this.generateSelector(element) || element.tagName.toLowerCase(),
@@ -388,28 +388,28 @@ export class EvaluationEngine extends EventEmitter {
     };
   }
   
-  /**
-   * Create issue from worker result
-   */
+  
+
+
   private createIssueFromWorkerResult(result: any): AccessibilityIssue {
-    // Implementation depends on worker result format
+    
     return {} as AccessibilityIssue;
   }
   
-  /**
-   * Infer issue type from rule
-   */
+  
+
+
   private inferIssueType(rule: CustomRule): any {
-    // Simple inference based on rule ID or criteria
+    
     if (rule.id.includes('contrast')) return 'contrast';
     if (rule.id.includes('keyboard')) return 'keyboard';
     if (rule.id.includes('aria')) return 'aria';
     return 'structure';
   }
   
-  /**
-   * Get element information
-   */
+  
+
+
   private getElementInfo(element: Element): any {
     const rect = element.getBoundingClientRect();
     
@@ -424,17 +424,17 @@ export class EvaluationEngine extends EventEmitter {
     };
   }
   
-  /**
-   * Generate unique selector for element
-   */
+  
+
+
   private generateSelector(element: Element): string {
-    // Implementation of CSS selector generation
+    
     return '';
   }
   
-  /**
-   * Get element visibility state
-   */
+  
+
+
   private getVisibility(element: Element): any {
     const style = window.getComputedStyle(element);
     
@@ -455,36 +455,36 @@ export class EvaluationEngine extends EventEmitter {
     return 'visible';
   }
   
-  /**
-   * Check if element is interactive
-   */
+  
+
+
   private isInteractive(element: Element): boolean {
     return element.matches('a, button, input, select, textarea, [role="button"], [onclick]');
   }
   
-  /**
-   * Check if element is focusable
-   */
+  
+
+
   private isFocusable(element: Element): boolean {
     const tabindex = element.getAttribute('tabindex');
     return this.isInteractive(element) || (tabindex !== null && parseInt(tabindex) >= 0);
   }
   
-  /**
-   * Generate suggested fixes
-   */
+  
+
+
   private generateFixes(element: Element, rule: CustomRule, violation: any): any[] {
-    // Rule-specific fix generation
+    
     return [];
   }
   
-  /**
-   * Calculate impact score
-   */
+  
+
+
   private calculateImpactScore(element: Element, rule: CustomRule, violation: any): number {
     let score = 0;
     
-    // Base score from severity
+    
     switch (rule.severity) {
       case 'critical': score = 80; break;
       case 'serious': score = 60; break;
@@ -492,16 +492,16 @@ export class EvaluationEngine extends EventEmitter {
       case 'minor': score = 20; break;
     }
     
-    // Adjust based on element importance
+    
     if (this.isInViewport(element, window)) score += 10;
     if (this.isInteractive(element)) score += 10;
     
     return Math.min(100, score);
   }
   
-  /**
-   * Cleanup resources
-   */
+  
+
+
   async destroy(): Promise<void> {
     if (this.workerPool) {
       await this.workerPool.terminate();

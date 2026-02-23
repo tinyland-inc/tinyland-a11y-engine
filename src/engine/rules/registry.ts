@@ -1,6 +1,6 @@
-/**
- * Rule Registry - Stub module for rule registration
- */
+
+
+
 
 import type { CustomRule } from '../../types';
 

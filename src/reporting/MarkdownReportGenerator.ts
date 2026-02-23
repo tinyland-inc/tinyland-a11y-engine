@@ -345,7 +345,7 @@ ${recommendations.join('\n')}
         comment += `> **🚨 Critical Issues**: This PR introduces ${summary.violations.critical} critical accessibility violations that must be fixed before merging.\n\n`;
       }
 
-      // Add top 3 issues
+      
       const topIssues = report.violations.slice(0, 3);
       if (topIssues.length > 0) {
         comment += `### Top Issues to Address

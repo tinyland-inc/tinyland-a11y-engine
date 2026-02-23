@@ -1,6 +1,6 @@
-/**
- * Timing utilities for throttling and debouncing
- */
+
+
+
 
 export function throttle<T extends (...args: any[]) => any>(
   func: T,

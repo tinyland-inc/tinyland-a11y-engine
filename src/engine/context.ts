@@ -1,6 +1,6 @@
-/**
- * Context Builder - Stub module for building evaluation contexts
- */
+
+
+
 
 import type { AccessibilityConfig, EvaluationContext, EvaluationOptions, ViewportInfo } from '../types';
 

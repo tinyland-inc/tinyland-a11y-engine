@@ -1,10 +1,10 @@
-/**
- * Accessibility validators for compile-time and runtime checks
- */
+
+
+
 
 import { parseColor, getContrastRatio, analyzeContrast, type RGB } from './utils/color/index.js';
 
-// Alias for backward compatibility
+
 const checkContrast = analyzeContrast;
 
 export interface ValidationError {
@@ -40,23 +40,23 @@ export interface ValidationContext {
   theme?: 'light' | 'dark';
 }
 
-/**
- * Options for validation functions
- */
+
+
+
 export interface ValidationOptions {
-  /** WCAG conformance level */
+  
   level?: 'AA' | 'AAA';
-  /** Whether text is large (14pt bold or 18pt) */
+  
   largeText?: boolean;
-  /** Include color blindness simulation */
+  
   colorBlindness?: boolean;
-  /** Check transparency overlays */
+  
   checkTransparency?: boolean;
 }
 
-/**
- * Validate color contrast between foreground and background
- */
+
+
+
 export function validateContrast(
   foreground: string,
   background: string,
@@ -66,7 +66,7 @@ export function validateContrast(
   const warnings: string[] = [];
   const metadata: Record<string, any> = {};
   
-  // Parse colors
+  
   const fgColor = parseColor(foreground);
   const bgColor = parseColor(background);
   
@@ -80,7 +80,7 @@ export function validateContrast(
     return { valid: false, errors, warnings };
   }
   
-  // Check contrast
+  
   const result = checkContrast(fgColor, bgColor);
   const wcagLevel = context.wcagLevel || 'AA';
   const isLargeText = context.isLargeText || false;
@@ -90,7 +90,7 @@ export function validateContrast(
   metadata.background = background;
   metadata.largeText = isLargeText;
   
-  // Determine pass/fail based on text size and WCAG level
+  
   let passes = false;
   let requiredRatio = 0;
 
@@ -116,7 +116,7 @@ export function validateContrast(
       `${element}${location}${position}`
     );
   } else if (wcagLevel === 'AA' && !result.meetsAAA) {
-    // Passes AA but not AAA
+    
     warnings.push(
       `Contrast ratio ${result.ratio.toFixed(2)}:1 meets WCAG AA but not AAA` +
       ` (AAA requires ${isLargeText ? 4.5 : 7}:1)`
@@ -131,9 +131,9 @@ export function validateContrast(
   };
 }
 
-/**
- * Validate transparency overlays don't reduce contrast
- */
+
+
+
 export function validateTransparency(
   overlayColor: string,
   textColor: string,
@@ -153,11 +153,11 @@ export function validateTransparency(
     return { valid: false, errors, warnings };
   }
   
-  // Calculate effective colors after overlay
+  
   const effectiveBackground = blendColors(background, overlay);
   const effectiveText = overlay.a && overlay.a < 1 ? blendColors(text, overlay) : text;
   
-  // Validate contrast with effective colors
+  
   const result = validateContrast(
     rgbToString(effectiveText),
     rgbToString(effectiveBackground),
@@ -169,7 +169,7 @@ export function validateTransparency(
       `Transparency overlay reduces contrast below acceptable levels. ` +
       `Overlay alpha: ${overlay.a || 1}`
     );
-    // Convert ValidationError objects to strings for this function
+    
     result.errors.forEach(e => {
       errors.push(typeof e === 'string' ? e : e.message);
     });
@@ -189,9 +189,9 @@ export function validateTransparency(
   };
 }
 
-/**
- * Validate theme consistency across light/dark modes
- */
+
+
+
 export function validateThemeConsistency(
   lightColors: { foreground: string; background: string },
   darkColors: { foreground: string; background: string },
@@ -201,14 +201,14 @@ export function validateThemeConsistency(
   const warnings: string[] = [];
   const metadata: Record<string, any> = {};
   
-  // Validate light theme
+  
   const lightResult = validateContrast(
     lightColors.foreground,
     lightColors.background,
     { ...context, theme: 'light' }
   );
   
-  // Validate dark theme
+  
   const darkResult = validateContrast(
     darkColors.foreground,
     darkColors.background,
@@ -218,7 +218,7 @@ export function validateThemeConsistency(
   metadata.light = lightResult.metadata;
   metadata.dark = darkResult.metadata;
   
-  // Add theme-specific errors
+  
   if (!lightResult.valid) {
     errors.push(...lightResult.errors.map(e => `[Light theme] ${e}`));
   }
@@ -227,7 +227,7 @@ export function validateThemeConsistency(
     errors.push(...darkResult.errors.map(e => `[Dark theme] ${e}`));
   }
   
-  // Check for consistency warnings
+  
   if (lightResult.metadata?.ratio && darkResult.metadata?.ratio) {
     const lightRatio = lightResult.metadata.ratio;
     const darkRatio = darkResult.metadata.ratio;
@@ -249,9 +249,9 @@ export function validateThemeConsistency(
   };
 }
 
-/**
- * Validate focus indicators
- */
+
+
+
 export function validateFocusIndicator(
   element: HTMLElement,
   context: ValidationContext = {}
@@ -263,7 +263,7 @@ export function validateFocusIndicator(
   const styles = window.getComputedStyle(element);
   const focusStyles = window.getComputedStyle(element, ':focus');
   
-  // Check outline
+  
   const outline = focusStyles.outline;
   const outlineWidth = parseFloat(focusStyles.outlineWidth);
   const outlineStyle = focusStyles.outlineStyle;
@@ -274,9 +274,9 @@ export function validateFocusIndicator(
     color: focusStyles.outlineColor
   };
   
-  // Check if outline is removed
+  
   if (outlineStyle === 'none' || outlineWidth === 0) {
-    // Check for alternative focus indicators
+    
     const hasBoxShadow = focusStyles.boxShadow !== 'none';
     const hasBorderChange = focusStyles.border !== styles.border;
     const hasBackgroundChange = focusStyles.backgroundColor !== styles.backgroundColor;
@@ -295,7 +295,7 @@ export function validateFocusIndicator(
     }
   }
   
-  // Check focus indicator contrast
+  
   if (focusStyles.outlineColor && focusStyles.backgroundColor) {
     const focusResult = validateContrast(
       focusStyles.outlineColor,
@@ -305,7 +305,7 @@ export function validateFocusIndicator(
     
     if (!focusResult.valid) {
       errors.push('Focus indicator has insufficient contrast');
-      // Convert ValidationError objects to strings for this function
+      
       focusResult.errors.forEach(e => {
         errors.push(typeof e === 'string' ? e : e.message);
       });
@@ -320,9 +320,9 @@ export function validateFocusIndicator(
   };
 }
 
-/**
- * Validate text size meets minimum requirements
- */
+
+
+
 export function validateTextSize(
   element: HTMLElement,
   context: ValidationContext = {}
@@ -340,7 +340,7 @@ export function validateTextSize(
   metadata.fontWeight = fontWeight;
   metadata.lineHeight = lineHeight;
   
-  // Check minimum font size
+  
   if (fontSize < 12) {
     errors.push(
       `Font size ${fontSize}px is below recommended minimum of 12px for body text`
@@ -351,7 +351,7 @@ export function validateTextSize(
     );
   }
   
-  // Check line height
+  
   const lineHeightRatio = lineHeight / fontSize;
   if (lineHeightRatio < 1.4) {
     warnings.push(
@@ -368,7 +368,7 @@ export function validateTextSize(
   };
 }
 
-// Helper functions
+
 function blendColors(bottom: RGB, top: RGB): RGB {
   const alpha = top.a ?? 1;
   const invAlpha = 1 - alpha;

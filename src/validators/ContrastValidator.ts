@@ -1,7 +1,7 @@
-/**
- * Enhanced Contrast Validator
- * Handles complex contrast scenarios including gradients, images, and transparency
- */
+
+
+
+
 
 import {
   type RGB,
@@ -26,7 +26,7 @@ export interface ExtendedValidationOptions {
   checkGradients?: boolean;
   checkImages?: boolean;
   checkPatterns?: boolean;
-  samplePoints?: number; // For gradient/image sampling
+  samplePoints?: number; 
 }
 
 export interface GradientInfo {
@@ -45,9 +45,9 @@ export interface ImageAnalysisResult {
   textBounds?: DOMRect;
 }
 
-/**
- * Enhanced contrast validator with support for complex backgrounds
- */
+
+
+
 export class ContrastValidator {
   private canvas: HTMLCanvasElement | null = null;
   private ctx: CanvasRenderingContext2D | null = null;
@@ -59,9 +59,9 @@ export class ContrastValidator {
     }
   }
 
-  /**
-   * Validate contrast for text on gradient backgrounds
-   */
+  
+
+
   async validateGradientContrast(
     element: Element,
     options: ExtendedValidationOptions = {}
@@ -81,7 +81,7 @@ export class ContrastValidator {
     const errors: ValidationError[] = [];
     const warnings: ValidationWarning[] = [];
 
-    // Sample gradient at multiple points
+    
     const samples = this.sampleGradient(gradient, samplePoints);
     let minRatio = Infinity;
     let maxRatio = 0;
@@ -94,7 +94,7 @@ export class ContrastValidator {
       if (result.ratio > maxRatio) maxRatio = result.ratio;
     }
 
-    // Check if minimum contrast meets requirements
+    
     const requiredRatio = this.getRequiredRatio(options);
     const valid = minRatio >= requiredRatio;
 
@@ -108,7 +108,7 @@ export class ContrastValidator {
       });
     }
 
-    // Warn about contrast variation
+    
     if (maxRatio - minRatio > 2) {
       warnings.push({
         type: 'gradient',
@@ -126,9 +126,9 @@ export class ContrastValidator {
     };
   }
 
-  /**
-   * Validate contrast for text on image backgrounds
-   */
+  
+
+
   async validateImageContrast(
     element: Element,
     imageUrl: string,
@@ -147,7 +147,7 @@ export class ContrastValidator {
       const analysis = await this.analyzeImage(imageUrl, element.getBoundingClientRect());
       const results: ContrastResult[] = [];
       
-      // Check against dominant colors
+      
       for (const bgColor of analysis.colorPalette) {
         results.push(checkContrast(foreground, bgColor));
       }
@@ -169,7 +169,7 @@ export class ContrastValidator {
         });
       }
 
-      // Always warn about image backgrounds
+      
       warnings.push({
         type: 'perception',
         message: 'Text on image backgrounds can be difficult to read',
@@ -188,9 +188,9 @@ export class ContrastValidator {
     }
   }
 
-  /**
-   * Validate SVG icon contrast
-   */
+  
+
+
   validateSVGContrast(
     svgElement: SVGElement,
     background: RGB,
@@ -200,7 +200,7 @@ export class ContrastValidator {
     const warnings: ValidationWarning[] = [];
     const results: ContrastResult[] = [];
 
-    // Get all visible paths and shapes
+    
     const elements = svgElement.querySelectorAll('path, rect, circle, ellipse, polygon, polyline, line');
     
     elements.forEach(el => {
@@ -208,11 +208,11 @@ export class ContrastValidator {
       const stroke = window.getComputedStyle(el).stroke;
       const opacity = parseFloat(window.getComputedStyle(el).opacity || '1');
 
-      // Check fill color
+      
       if (fill && fill !== 'none') {
         const color = parseColor(fill);
         if (color) {
-          // Apply opacity
+          
           if (opacity < 1) {
             color.a = (color.a || 1) * opacity;
           }
@@ -220,11 +220,11 @@ export class ContrastValidator {
         }
       }
 
-      // Check stroke color
+      
       if (stroke && stroke !== 'none') {
         const color = parseColor(stroke);
         if (color) {
-          // Apply opacity
+          
           if (opacity < 1) {
             color.a = (color.a || 1) * opacity;
           }
@@ -251,7 +251,7 @@ export class ContrastValidator {
       });
     }
 
-    // Check for opacity issues
+    
     const hasLowOpacity = Array.from(elements).some(el => {
       const opacity = parseFloat(window.getComputedStyle(el).opacity || '1');
       return opacity < 0.6;
@@ -274,9 +274,9 @@ export class ContrastValidator {
     };
   }
 
-  /**
-   * Validate form element contrast including borders and placeholders
-   */
+  
+
+
   validateFormElementContrast(
     element: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement,
     options: ExtendedValidationOptions = {}
@@ -287,15 +287,15 @@ export class ContrastValidator {
 
     const background = getEffectiveBackgroundColor(element);
 
-    // Check text contrast
+    
     const textColor = getComputedColor(element, 'color');
     if (textColor) {
       results.push(checkContrast(textColor, background));
     }
 
-    // Check placeholder contrast
+    
     if ('placeholder' in element && element.placeholder) {
-      // Placeholder styling is tricky, we need to check pseudo-element
+      
       const placeholderColor = this.getPlaceholderColor(element);
       if (placeholderColor) {
         const placeholderResult = checkContrast(placeholderColor, background);
@@ -311,7 +311,7 @@ export class ContrastValidator {
       }
     }
 
-    // Check border contrast
+    
     const borderColor = window.getComputedStyle(element).borderColor;
     if (borderColor && borderColor !== 'transparent') {
       const border = parseColor(borderColor);
@@ -350,9 +350,9 @@ export class ContrastValidator {
     };
   }
 
-  /**
-   * Validate contrast for disabled elements
-   */
+  
+
+
   validateDisabledElementContrast(
     element: HTMLElement,
     options: ExtendedValidationOptions = {}
@@ -367,7 +367,7 @@ export class ContrastValidator {
     const result = checkContrast(foreground, background);
     const warnings: ValidationWarning[] = [];
 
-    // Disabled elements have no minimum requirement but should be distinguishable
+    
     if (result.ratio < 2) {
       warnings.push({
         type: 'perception',
@@ -376,7 +376,7 @@ export class ContrastValidator {
       });
     }
 
-    // Check if it looks too similar to enabled state
+    
     if (result.ratio > 4.5) {
       warnings.push({
         type: 'perception', 
@@ -386,7 +386,7 @@ export class ContrastValidator {
     }
 
     return {
-      valid: true, // Disabled elements don't fail contrast
+      valid: true, 
       ratio: result.ratio,
       errors: [],
       warnings,
@@ -394,16 +394,16 @@ export class ContrastValidator {
     };
   }
 
-  /**
-   * Parse CSS gradient into structured data
-   */
+  
+
+
   private parseGradient(gradientString: string): GradientInfo | null {
     if (!gradientString || gradientString === 'none') return null;
 
     const colors: RGB[] = [];
     const positions: number[] = [];
 
-    // Extract colors from gradient string
+    
     const colorMatches = gradientString.matchAll(/(?:rgb|rgba|hsl|hsla|#)[\w\s,.\(\)#]+/g);
     
     for (const match of colorMatches) {
@@ -415,13 +415,13 @@ export class ContrastValidator {
 
     if (colors.length < 2) return null;
 
-    // Determine gradient type
+    
     let type: 'linear' | 'radial' | 'conic' = 'linear';
     if (gradientString.includes('radial-gradient')) type = 'radial';
     else if (gradientString.includes('conic-gradient')) type = 'conic';
 
-    // Extract angle for linear gradients
-    let angle = 180; // Default top to bottom
+    
+    let angle = 180; 
     const angleMatch = gradientString.match(/(\d+)deg/);
     if (angleMatch) {
       angle = parseInt(angleMatch[1]);
@@ -430,9 +430,9 @@ export class ContrastValidator {
     return { type, colors, positions, angle };
   }
 
-  /**
-   * Sample colors from a gradient
-   */
+  
+
+
   private sampleGradient(gradient: GradientInfo, sampleCount: number): RGB[] {
     const samples: RGB[] = [];
     
@@ -445,16 +445,16 @@ export class ContrastValidator {
     return samples;
   }
 
-  /**
-   * Interpolate color at specific position in gradient
-   */
+  
+
+
   private interpolateGradient(gradient: GradientInfo, position: number): RGB {
     const { colors } = gradient;
     
     if (position <= 0) return colors[0];
     if (position >= 1) return colors[colors.length - 1];
 
-    // Simple linear interpolation between colors
+    
     const segmentSize = 1 / (colors.length - 1);
     const segmentIndex = Math.floor(position / segmentSize);
     const segmentPosition = (position % segmentSize) / segmentSize;
@@ -470,9 +470,9 @@ export class ContrastValidator {
     };
   }
 
-  /**
-   * Analyze image for dominant colors
-   */
+  
+
+
   private async analyzeImage(
     imageUrl: string,
     textBounds?: DOMRect
@@ -493,14 +493,14 @@ export class ContrastValidator {
         this.canvas.height = img.height;
         this.ctx.drawImage(img, 0, 0);
 
-        // Sample area where text appears
+        
         let sampleX = 0;
         let sampleY = 0;
         let sampleWidth = img.width;
         let sampleHeight = img.height;
 
         if (textBounds) {
-          // Convert text bounds to image coordinates
+          
           const scaleX = img.width / img.naturalWidth;
           const scaleY = img.height / img.naturalHeight;
           
@@ -513,7 +513,7 @@ export class ContrastValidator {
         const imageData = this.ctx.getImageData(sampleX, sampleY, sampleWidth, sampleHeight);
         const pixels = imageData.data;
         
-        // Calculate dominant colors using k-means clustering
+        
         const colorMap = new Map<string, number>();
         let hasTransparency = false;
         
@@ -525,7 +525,7 @@ export class ContrastValidator {
           
           if (a < 255) hasTransparency = true;
           
-          // Quantize colors to reduce number of unique values
+          
           const qR = Math.round(r / 16) * 16;
           const qG = Math.round(g / 16) * 16;
           const qB = Math.round(b / 16) * 16;
@@ -534,7 +534,7 @@ export class ContrastValidator {
           colorMap.set(key, (colorMap.get(key) || 0) + 1);
         }
 
-        // Get top colors
+        
         const sortedColors = Array.from(colorMap.entries())
           .sort((a, b) => b[1] - a[1])
           .slice(0, 5)
@@ -543,7 +543,7 @@ export class ContrastValidator {
             return { r, g, b, a: 1 };
           });
 
-        // Calculate average color
+        
         let totalR = 0, totalG = 0, totalB = 0;
         let pixelCount = 0;
         
@@ -581,25 +581,25 @@ export class ContrastValidator {
     });
   }
 
-  /**
-   * Get placeholder color (approximation since we can't directly access pseudo-element styles)
-   */
+  
+
+
   private getPlaceholderColor(element: HTMLInputElement | HTMLTextAreaElement): RGB | null {
-    // Common placeholder opacity is 0.54 (Material Design) or 0.4
+    
     const textColor = getComputedColor(element, 'color');
     
     if (!textColor) return null;
 
-    // Apply typical placeholder opacity
+    
     return {
       ...textColor,
       a: 0.54
     };
   }
 
-  /**
-   * Get required contrast ratio based on options
-   */
+  
+
+
   protected getRequiredRatio(options: ExtendedValidationOptions): number {
     if (options.customRatio) return options.customRatio;
 
@@ -617,9 +617,9 @@ export class ContrastValidator {
     }
   }
 
-  /**
-   * Create error result helper
-   */
+  
+
+
   private createErrorResult(message: string): ValidationResult {
     return {
       valid: false,
@@ -635,9 +635,9 @@ export class ContrastValidator {
     };
   }
 
-  /**
-   * Validate simple foreground/background contrast
-   */
+  
+
+
   validateContrast(
     foreground: string | RGB,
     background: string | RGB,
@@ -673,9 +673,9 @@ export class ContrastValidator {
     };
   }
 
-  /**
-   * Validate element contrast in current theme
-   */
+  
+
+
   validateElementContrast(
     element: Element,
     options: ExtendedValidationOptions = {}
@@ -718,9 +718,9 @@ export class ContrastValidator {
   }
 }
 
-/**
- * Factory function to create validator instance
- */
+
+
+
 export function createContrastValidator(): ContrastValidator {
   return new ContrastValidator();
 }

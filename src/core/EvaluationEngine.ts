@@ -1,7 +1,7 @@
-/**
- * Core Accessibility Evaluation Engine
- * Modular, performant, and memory-safe evaluation system
- */
+
+
+
+
 
 import type {
   EvaluationRule,
@@ -21,39 +21,39 @@ export class EvaluationEngine {
   private elementCache: WeakMap<Element, ElementReference> = new WeakMap();
   
   constructor(options: Partial<EvaluationOptions> = {}) {
-    this.memoryLimit = options.memoryLimit || 50 * 1024 * 1024; // 50MB default
+    this.memoryLimit = options.memoryLimit || 50 * 1024 * 1024; 
     this.initializeDefaultPlugins();
   }
 
-  /**
-   * Register a plugin with the evaluation engine
-   */
+  
+
+
   registerPlugin(plugin: EvaluationPlugin): void {
     this.plugins.set(plugin.id, plugin);
     
-    // Register plugin rules
+    
     if (plugin.rules) {
       plugin.rules.forEach(rule => {
         this.registerRule(rule);
       });
     }
 
-    // Initialize plugin
+    
     if (plugin.initialize) {
       plugin.initialize(this);
     }
   }
 
-  /**
-   * Register an evaluation rule
-   */
+  
+
+
   registerRule(rule: EvaluationRule): void {
     this.rules.set(rule.id, rule);
   }
 
-  /**
-   * Evaluate elements with cancelable operations
-   */
+  
+
+
   async evaluate(
     elements: Element[], 
     options: EvaluationOptions = {}
@@ -65,10 +65,10 @@ export class EvaluationEngine {
       const context = this.createContext(options, abortController.signal);
       const results: EvaluationResult[] = [];
 
-      // Apply sampling strategy
+      
       const sampled = await this.applySampling(elements, options);
 
-      // Process elements in chunks
+      
       const chunkSize = options.chunkSize || 50;
       for (let i = 0; i < sampled.length; i += chunkSize) {
         if (abortController.signal.aborted) break;
@@ -77,13 +77,13 @@ export class EvaluationEngine {
         const chunkResults = await this.evaluateChunk(chunk, context);
         results.push(...chunkResults);
 
-        // Check memory usage
+        
         if (this.isMemoryExceeded()) {
           console.warn('Memory limit exceeded, stopping evaluation');
           break;
         }
 
-        // Yield to main thread
+        
         await this.yieldToMain();
       }
 
@@ -93,24 +93,24 @@ export class EvaluationEngine {
     }
   }
 
-  /**
-   * Cancel all active evaluations
-   */
+  
+
+
   cancelAll(): void {
     this.activeEvaluations.forEach(controller => controller.abort());
     this.activeEvaluations.clear();
   }
 
-  /**
-   * Apply sampling strategy to elements
-   */
+  
+
+
   private async applySampling(
     elements: Element[],
     options: EvaluationOptions
   ): Promise<Element[]> {
     if (!options.sampling) return elements;
 
-    // Use 'type' field for backwards compat, fallback to 'strategy' if set
+    
     const strategy = options.sampling.type || options.sampling.strategy || 'viewport';
     const rate = options.sampling.rate || 1.0;
 
@@ -122,15 +122,15 @@ export class EvaluationEngine {
       case 'priority':
         return this.prioritySampling(elements, rate);
       case 'adaptive':
-        return this.viewportSampling(elements, rate); // Fallback to viewport
+        return this.viewportSampling(elements, rate); 
       default:
         return elements;
     }
   }
 
-  /**
-   * Viewport-based sampling prioritizes visible elements
-   */
+  
+
+
   private viewportSampling(elements: Element[], rate: number): Element[] {
     const viewport = {
       top: window.scrollY,
@@ -151,38 +151,38 @@ export class EvaluationEngine {
       return { element: el, score };
     });
 
-    // Sort by score and sample
+    
     scored.sort((a, b) => b.score - a.score);
     const sampleSize = Math.ceil(elements.length * rate);
     return scored.slice(0, sampleSize).map(s => s.element);
   }
 
-  /**
-   * Random sampling
-   */
+  
+
+
   private randomSampling(elements: Element[], rate: number): Element[] {
     const sampleSize = Math.ceil(elements.length * rate);
     const shuffled = [...elements].sort(() => Math.random() - 0.5);
     return shuffled.slice(0, sampleSize);
   }
 
-  /**
-   * Priority-based sampling using element importance
-   */
+  
+
+
   private prioritySampling(elements: Element[], rate: number): Element[] {
     const scored = elements.map(el => {
       let score = 0;
       
-      // Interactive elements get higher priority
+      
       if (el.matches('a, button, input, select, textarea')) score += 3;
       
-      // ARIA landmarks
+      
       if (el.hasAttribute('role') || el.hasAttribute('aria-label')) score += 2;
       
-      // Headings
+      
       if (el.matches('h1, h2, h3, h4, h5, h6')) score += 2;
       
-      // Forms
+      
       if (el.matches('form, label')) score += 1;
 
       return { element: el, score };
@@ -193,9 +193,9 @@ export class EvaluationEngine {
     return scored.slice(0, sampleSize).map(s => s.element);
   }
 
-  /**
-   * Evaluate a chunk of elements
-   */
+  
+
+
   private async evaluateChunk(
     elements: Element[], 
     context: EvaluationContext
@@ -213,9 +213,9 @@ export class EvaluationEngine {
     return results;
   }
 
-  /**
-   * Evaluate a single element against all rules
-   */
+  
+
+
   private async evaluateElement(
     element: Element,
     elementRef: ElementReference,
@@ -230,11 +230,11 @@ export class EvaluationEngine {
       try {
         const result = await rule.evaluate(element, context);
         if (result) {
-          // Convert RuleResult to full EvaluationResult if needed
+          
           const isFullResult = 'id' in result && 'type' in result && 'wcagLevel' in result && 'selector' in result;
 
           if (isFullResult) {
-            // Already a full EvaluationResult
+            
             results.push({
               ...result as EvaluationResult,
               ruleId: rule.id,
@@ -242,7 +242,7 @@ export class EvaluationEngine {
               timestamp: Date.now()
             });
           } else {
-            // RuleResult - need to construct full EvaluationResult
+            
             const ruleResult = result as RuleResult;
             const wcagCriteria = Array.isArray(ruleResult.wcagCriteria)
               ? ruleResult.wcagCriteria[0] || ''
@@ -274,9 +274,9 @@ export class EvaluationEngine {
     return results;
   }
 
-  /**
-   * Get rules applicable to an element
-   */
+  
+
+
   private getApplicableRules(
     element: Element, 
     context: EvaluationContext
@@ -302,18 +302,18 @@ export class EvaluationEngine {
     return rules;
   }
 
-  /**
-   * Create a memory-safe element reference
-   */
+  
+
+
   private createElementReference(element: Element): ElementReference {
-    // Check cache first
+    
     const cached = this.elementCache.get(element);
     if (cached) return cached;
 
-    // Generate unique selector
+    
     const selector = this.generateSelector(element);
     
-    // Create reference
+    
     const ref: ElementReference = {
       selector,
       tagName: element.tagName.toLowerCase(),
@@ -322,15 +322,15 @@ export class EvaluationEngine {
       bounds: element.getBoundingClientRect()
     };
 
-    // Cache reference
+    
     this.elementCache.set(element, ref);
     
     return ref;
   }
 
-  /**
-   * Generate a unique selector for an element
-   */
+  
+
+
   private generateSelector(element: Element): string {
     const path: string[] = [];
     let current: Element | null = element;
@@ -364,9 +364,9 @@ export class EvaluationEngine {
     return path.join(' > ');
   }
 
-  /**
-   * Get relevant attributes for reference
-   */
+  
+
+
   private getRelevantAttributes(element: Element): Record<string, string> {
     const attrs: Record<string, string> = {};
     const relevant = [
@@ -382,9 +382,9 @@ export class EvaluationEngine {
     return attrs;
   }
 
-  /**
-   * Get visible text content
-   */
+  
+
+
   private getVisibleText(element: Element): string {
     const walker = document.createTreeWalker(
       element,
@@ -415,9 +415,9 @@ export class EvaluationEngine {
     return texts.join(' ');
   }
 
-  /**
-   * Create evaluation context
-   */
+  
+
+
   private createContext(
     options: EvaluationOptions,
     signal: AbortSignal
@@ -438,9 +438,9 @@ export class EvaluationEngine {
     };
   }
 
-  /**
-   * Check if memory limit is exceeded
-   */
+  
+
+
   private isMemoryExceeded(): boolean {
     if ('memory' in performance) {
       const memory = (performance as any).memory;
@@ -449,9 +449,9 @@ export class EvaluationEngine {
     return false;
   }
 
-  /**
-   * Yield control to main thread
-   */
+  
+
+
   private yieldToMain(): Promise<void> {
     return new Promise(resolve => {
       if ('scheduler' in window && 'yield' in (window as any).scheduler) {
@@ -462,10 +462,10 @@ export class EvaluationEngine {
     });
   }
 
-  /**
-   * Initialize default plugins
-   */
+  
+
+
   private initializeDefaultPlugins(): void {
-    // Default plugins will be loaded here
+    
   }
 }

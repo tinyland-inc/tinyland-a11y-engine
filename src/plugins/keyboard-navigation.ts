@@ -1,7 +1,7 @@
-/**
- * Keyboard Navigation Plugin
- * Ensures proper keyboard accessibility
- */
+
+
+
+
 
 import type { EvaluationPlugin } from '../types';
 
@@ -21,7 +21,7 @@ const plugin: EvaluationPlugin = {
       evaluate: async (element: Element) => {
         const tabindex = element.getAttribute('tabindex');
         
-        // Check if element is keyboard focusable
+        
         if (tabindex === '-1') {
           return {
             severity: 'error',
@@ -49,7 +49,7 @@ const plugin: EvaluationPlugin = {
       evaluate: async (element: Element) => {
         const tabindex = element.getAttribute('tabindex');
         
-        // Warn about positive tabindex values
+        
         if (tabindex && parseInt(tabindex) > 0) {
           return {
             severity: 'warning',

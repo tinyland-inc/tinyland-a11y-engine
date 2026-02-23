@@ -1,21 +1,21 @@
-/**
- * WCAG contrast ratio calculations
- * Consolidates contrast logic from all sources with caching
- */
+
+
+
+
 
 import type { RGB, ContrastResult, WCAGLevel } from './types';
 import { luminanceCache, contrastCache } from './cache';
 import { parseColor } from './parser';
 import { alphaBlend } from './conversion';
 
-/**
- * Calculate relative luminance (WCAG 2.1 formula)
- * https://www.w3.org/TR/WCAG21/#dfn-relative-luminance
- */
+
+
+
+
 export function getRelativeLuminance(rgb: RGB): number {
 	const key = `${rgb.r},${rgb.g},${rgb.b}`;
 
-	// Check cache
+	
 	const cached = luminanceCache.get(key);
 	if (cached !== undefined) return cached;
 
@@ -30,34 +30,34 @@ export function getRelativeLuminance(rgb: RGB): number {
 
 	const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
 
-	// Cache the result
+	
 	luminanceCache.set(key, luminance);
 	return luminance;
 }
 
-/**
- * Calculate contrast ratio between two colors
- * https://www.w3.org/TR/WCAG21/#dfn-contrast-ratio
- *
- * Accepts either RGB objects or color strings
- */
+
+
+
+
+
+
 export function getContrastRatio(color1: string | RGB, color2: string | RGB): number {
-	// Parse colors if strings
+	
 	let rgb1: RGB | null = typeof color1 === 'string' ? parseColor(color1) : color1;
 	let rgb2: RGB | null = typeof color2 === 'string' ? parseColor(color2) : color2;
 
 	if (!rgb1 || !rgb2) {
-		return 1.0; // Return minimum contrast if colors can't be parsed
+		return 1.0; 
 	}
 
-	// Create cache key
+	
 	const cacheKey = `${rgb1.r},${rgb1.g},${rgb1.b}|${rgb2.r},${rgb2.g},${rgb2.b}`;
 
-	// Check cache
+	
 	const cached = contrastCache.get(cacheKey);
 	if (cached !== undefined) return cached;
 
-	// Handle transparency by alpha blending
+	
 	const fg = rgb1.a !== undefined && rgb1.a < 1 ? alphaBlend(rgb1, rgb2) : rgb1;
 
 	const l1 = getRelativeLuminance(fg);
@@ -68,14 +68,14 @@ export function getContrastRatio(color1: string | RGB, color2: string | RGB): nu
 
 	const ratio = (lighter + 0.05) / (darker + 0.05);
 
-	// Cache the result
+	
 	contrastCache.set(cacheKey, ratio);
 	return ratio;
 }
 
-/**
- * Check if contrast ratio meets WCAG level
- */
+
+
+
 export function meetsWCAG(
 	color1: string | RGB,
 	color2: string | RGB,
@@ -96,9 +96,9 @@ export function meetsWCAG(
 	}
 }
 
-/**
- * Get full contrast analysis
- */
+
+
+
 export function analyzeContrast(color1: string | RGB, color2: string | RGB): ContrastResult {
 	const ratio = getContrastRatio(color1, color2);
 	return {
@@ -111,10 +111,10 @@ export function analyzeContrast(color1: string | RGB, color2: string | RGB): Con
 	};
 }
 
-/**
- * Check if text size qualifies as "large" per WCAG
- * Large text: 18pt (24px) or 14pt (18.66px) bold
- */
+
+
+
+
 export function isLargeText(fontSize: string | number, fontWeight: string | number): boolean {
 	const size = typeof fontSize === 'string' ? parseFloat(fontSize) : fontSize;
 	const weight = typeof fontWeight === 'string' ? parseInt(fontWeight) || 400 : fontWeight;
@@ -122,41 +122,41 @@ export function isLargeText(fontSize: string | number, fontWeight: string | numb
 	return size >= 24 || (size >= 18.66 && weight >= 700);
 }
 
-/**
- * Calculate perceived brightness (for determining if color is light or dark)
- * Using HSP color model
- */
+
+
+
+
 export function getPerceivedBrightness(rgb: RGB): number {
 	return Math.sqrt(0.299 * Math.pow(rgb.r, 2) + 0.587 * Math.pow(rgb.g, 2) + 0.114 * Math.pow(rgb.b, 2));
 }
 
-/**
- * Determine if a color is perceived as light or dark
- */
+
+
+
 export function isLightColor(rgb: RGB): boolean {
 	return getPerceivedBrightness(rgb) > 127.5;
 }
 
-/**
- * Generate a contrasting color for text on a given background
- */
+
+
+
 export function getContrastingColor(background: RGB, preferDark = true): RGB {
 	const isLight = isLightColor(background);
 
 	if (isLight && preferDark) {
-		return { r: 0, g: 0, b: 0 }; // Black
+		return { r: 0, g: 0, b: 0 }; 
 	} else if (!isLight && !preferDark) {
-		return { r: 255, g: 255, b: 255 }; // White
+		return { r: 255, g: 255, b: 255 }; 
 	} else if (isLight) {
-		return { r: 255, g: 255, b: 255 }; // White
+		return { r: 255, g: 255, b: 255 }; 
 	} else {
-		return { r: 0, g: 0, b: 0 }; // Black
+		return { r: 0, g: 0, b: 0 }; 
 	}
 }
 
-/**
- * Adjust color brightness until target contrast is met
- */
+
+
+
 export function adjustColorForContrast(
 	color: string | RGB,
 	background: string | RGB,
@@ -178,7 +178,7 @@ export function adjustColorForContrast(
 	const step = preferLighter ? 5 : -5;
 	let adjustedRgb = { ...rgb };
 	let attempts = 0;
-	const maxAttempts = 51; // 255 / 5 = 51 steps
+	const maxAttempts = 51; 
 
 	while (attempts < maxAttempts) {
 		adjustedRgb.r = Math.max(0, Math.min(255, adjustedRgb.r + step));
@@ -190,7 +190,7 @@ export function adjustColorForContrast(
 			return adjustedRgb;
 		}
 
-		// If we've reached pure white or black, stop
+		
 		if (
 			(preferLighter && adjustedRgb.r === 255 && adjustedRgb.g === 255 && adjustedRgb.b === 255) ||
 			(!preferLighter && adjustedRgb.r === 0 && adjustedRgb.g === 0 && adjustedRgb.b === 0)
@@ -204,9 +204,9 @@ export function adjustColorForContrast(
 	return adjustedRgb;
 }
 
-/**
- * Check if text is readable on a semi-transparent background
- */
+
+
+
 export function isReadableOnGlass(
 	textColor: string | RGB,
 	glassColor: RGB,
@@ -214,18 +214,18 @@ export function isReadableOnGlass(
 	backgroundBehindGlass: RGB,
 	minContrast = 4.5
 ): boolean {
-	// Calculate effective background color
+	
 	const effectiveBg = alphaBlend({ ...glassColor, a: glassOpacity }, backgroundBehindGlass);
 
-	// Check contrast
+	
 	const ratio = getContrastRatio(textColor, effectiveBg);
 	return ratio >= minContrast;
 }
 
-/**
- * Batch validate contrast for multiple element pairs
- * Returns validation results for each pair
- */
+
+
+
+
 export function batchValidate(
 	pairs: Array<{
 		foreground: string | RGB;
@@ -240,7 +240,7 @@ export function batchValidate(
 	return pairs.map(({ foreground, background, largeText = false }) => {
 		const ratio = getContrastRatio(foreground, background);
 
-		// WCAG 2.1 requirements
+		
 		const aaThreshold = largeText ? 3 : 4.5;
 		const aaaThreshold = largeText ? 4.5 : 7;
 
@@ -259,14 +259,14 @@ export function batchValidate(
 	});
 }
 
-/**
- * Simulate color blindness
- */
+
+
+
 export function simulateColorBlindness(
 	rgb: RGB,
 	type: 'protanopia' | 'deuteranopia' | 'tritanopia'
 ): RGB {
-	// Conversion matrices for different types of color blindness
+	
 	const matrices = {
 		protanopia: [
 			[0.567, 0.433, 0],

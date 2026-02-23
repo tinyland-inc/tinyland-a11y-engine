@@ -6,25 +6,25 @@ export class KeyboardNavigationValidator {
   validate(container: HTMLElement = document.body): EvaluationResult[] {
     const results: EvaluationResult[] = [];
     
-    // Check focusable elements
+    
     this.validateFocusableElements(container, results);
     
-    // Check tab order
+    
     this.validateTabOrder(container, results);
     
-    // Check focus indicators
+    
     this.validateFocusIndicators(container, results);
     
-    // Check for keyboard traps
+    
     this.validateKeyboardTraps(container, results);
     
-    // Check interactive elements
+    
     this.validateInteractiveElements(container, results);
     
-    // Check skip links
+    
     this.validateSkipLinks(container, results);
     
-    // Check form navigation
+    
     this.validateFormNavigation(container, results);
     
     return results;
@@ -34,7 +34,7 @@ export class KeyboardNavigationValidator {
     const focusableSelector = 'a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])';
     const focusableElements = container.querySelectorAll(focusableSelector);
     
-    // Report count
+    
     results.push({
       id: this.generateId(),
       timestamp: Date.now(),
@@ -46,7 +46,7 @@ export class KeyboardNavigationValidator {
       message: `Found ${focusableElements.length} focusable elements`
     });
 
-    // Check for disabled elements
+    
     const disabledElements = container.querySelectorAll('[disabled]');
     if (disabledElements.length > 0) {
       results.push({
@@ -93,7 +93,7 @@ export class KeyboardNavigationValidator {
       const styles = window.getComputedStyle(element as HTMLElement);
       const focusElement = element as HTMLElement;
       
-      // Create a temporary focus state check
+      
       const originalTabIndex = focusElement.getAttribute('tabindex');
       if (!originalTabIndex) {
         focusElement.setAttribute('tabindex', '-1');
@@ -102,14 +102,14 @@ export class KeyboardNavigationValidator {
       focusElement.focus();
       const focusStyles = window.getComputedStyle(focusElement);
       
-      // Check for focus indicators
+      
       const hasOutline = focusStyles.outlineStyle !== 'none' && focusStyles.outlineWidth !== '0px';
       const hasBoxShadow = focusStyles.boxShadow !== 'none';
       const hasBorderChange = styles.border !== focusStyles.border;
       
       focusElement.blur();
       
-      // Restore original tabindex
+      
       if (!originalTabIndex) {
         focusElement.removeAttribute('tabindex');
       }
@@ -130,16 +130,16 @@ export class KeyboardNavigationValidator {
   }
 
   private validateKeyboardTraps(container: HTMLElement, results: EvaluationResult[]) {
-    // Check for modal dialogs without escape mechanisms
+    
     const modals = container.querySelectorAll('[role="dialog"][aria-modal="true"]');
 
     modals.forEach(modal => {
-      // Use standard CSS selectors (`:has-text()` is not a valid CSS pseudo-class)
+      
       const closeButtons = modal.querySelectorAll(
         'button[aria-label*="close" i], button[aria-label*="cancel" i], button[aria-label*="Close"], button[aria-label*="Cancel"]'
       );
 
-      // Also check for buttons with close-related text content
+      
       let hasCloseButton = closeButtons.length > 0;
       if (!hasCloseButton) {
         const allButtons = modal.querySelectorAll('button');
@@ -170,7 +170,7 @@ export class KeyboardNavigationValidator {
   }
 
   private validateInteractiveElements(container: HTMLElement, results: EvaluationResult[]) {
-    // Find elements with click handlers that aren't semantic interactive elements
+    
     const allElements = container.querySelectorAll('*');
     
     allElements.forEach(element => {
@@ -194,7 +194,7 @@ export class KeyboardNavigationValidator {
         });
       }
       
-      // Check custom controls for keyboard support
+      
       if (element.hasAttribute('role') && 
           ['button', 'link', 'tab', 'menuitem'].includes(element.getAttribute('role') || '')) {
         
@@ -220,13 +220,13 @@ export class KeyboardNavigationValidator {
   }
 
   private validateSkipLinks(container: HTMLElement, results: EvaluationResult[]) {
-    // Only check at document level
+    
     if (container !== document.body) return;
 
-    // Find skip links by class name (`:has-text()` is not a valid CSS pseudo-class)
+    
     const skipLinksByClass = document.querySelectorAll('a[href^="#"][class*="skip"]');
 
-    // Also check for links whose text content includes "skip"
+    
     let hasSkipLink = skipLinksByClass.length > 0;
     if (!hasSkipLink) {
       const allHashLinks = document.querySelectorAll('a[href^="#"]');
@@ -241,7 +241,7 @@ export class KeyboardNavigationValidator {
     const hasNavigation = document.querySelector('nav, [role="navigation"]');
 
     if (hasNavigation && !hasSkipLink) {
-      // Look for any link to main content
+      
       const mainContentLinks = document.querySelectorAll('a[href="#main"], a[href="#content"]');
       
       if (mainContentLinks.length === 0) {
@@ -267,7 +267,7 @@ export class KeyboardNavigationValidator {
     formInputs.forEach(input => {
       const inputElement = input as HTMLInputElement;
       
-      // Check for labels
+      
       const hasLabel = inputElement.labels && inputElement.labels.length > 0;
       const hasAriaLabel = input.hasAttribute('aria-label');
       const hasAriaLabelledBy = input.hasAttribute('aria-labelledby');
@@ -292,7 +292,7 @@ export class KeyboardNavigationValidator {
       }
     });
     
-    // Check for submit buttons in forms
+    
     const forms = container.querySelectorAll('form');
     forms.forEach(form => {
       const submitButtons = form.querySelectorAll(
@@ -328,7 +328,7 @@ export class KeyboardNavigationValidator {
       }
     }
     
-    // Add nth-child if needed
+    
     const parent = element.parentElement;
     if (parent) {
       const siblings = Array.from(parent.children);

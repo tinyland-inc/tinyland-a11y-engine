@@ -1,6 +1,6 @@
-/**
- * Performance Monitor - Stub module for performance tracking
- */
+
+
+
 
 import type { PerformanceMetrics } from '../types';
 

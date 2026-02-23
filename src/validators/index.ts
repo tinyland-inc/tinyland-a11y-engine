@@ -1,9 +1,9 @@
-/**
- * Accessibility Validators
- * Export all contrast validation utilities
- */
 
-// Import items needed for helper functions
+
+
+
+
+
 import { createContrastValidator as _createContrastValidator, ContrastValidator as _ContrastValidator } from './ContrastValidator.js';
 import { ContrastTestRunner as _ContrastTestRunner, createStandardTestSuites as _createStandardTestSuites } from './ContrastTestRunner.js';
 import { RuntimeContrastMonitor as _RuntimeContrastMonitor, createContrastMonitor as _createContrastMonitor } from './RuntimeContrastMonitor.js';
@@ -11,7 +11,7 @@ import type { MonitorOptions as _MonitorOptions } from './RuntimeContrastMonitor
 import type { ContrastTestSuite as _ContrastTestSuite, TestRunResult as _TestRunResult } from './ContrastTestRunner.js';
 import type { ValidationOptions as _ValidationOptions } from '../validators.js';
 
-// Core validators
+
 export { ContrastValidator, createContrastValidator } from './ContrastValidator.js';
 export type {
   ExtendedValidationOptions,
@@ -19,7 +19,7 @@ export type {
   ImageAnalysisResult
 } from './ContrastValidator.js';
 
-// Theme validators
+
 export { ThemeContrastValidator, createThemeContrastValidator } from './ThemeContrastValidator.js';
 export type {
   ThemeColors,
@@ -27,7 +27,7 @@ export type {
   ThemeValidationResult
 } from './ThemeContrastValidator.js';
 
-// Test runner
+
 export { ContrastTestRunner, createStandardTestSuites } from './ContrastTestRunner.js';
 export type {
   ContrastTestCase,
@@ -37,7 +37,7 @@ export type {
   CoverageReport
 } from './ContrastTestRunner.js';
 
-// Runtime monitor
+
 export { RuntimeContrastMonitor, createContrastMonitor } from './RuntimeContrastMonitor.js';
 export type {
   MonitorOptions,
@@ -45,16 +45,16 @@ export type {
   MonitorStats
 } from './RuntimeContrastMonitor.js';
 
-// Re-export types from parent validators
+
 export type {
   ValidationResult,
   ValidationContext,
   ValidationOptions
 } from '../validators.js';
 
-// Note: Use ExtendedValidationOptions from ContrastValidator for richer options
 
-// Re-export contrast utilities
+
+
 export {
   type RGB,
   type HSL,
@@ -76,9 +76,9 @@ export {
   getContrastingColor
 } from '../contrast.js';
 
-/**
- * Quick validation helper
- */
+
+
+
 export function validateContrast(
   foreground: string,
   background: string,
@@ -89,9 +89,9 @@ export function validateContrast(
   return result.valid;
 }
 
-/**
- * Get all elements with contrast violations on the current page
- */
+
+
+
 export async function findContrastViolations(
   root: Element = document.body,
   options?: _ValidationOptions
@@ -109,16 +109,16 @@ export async function findContrastViolations(
   return violations;
 }
 
-/**
- * Enable runtime contrast monitoring
- */
+
+
+
 export function enableContrastMonitoring(options?: _MonitorOptions): _RuntimeContrastMonitor {
   return _createContrastMonitor(options, true);
 }
 
-/**
- * Run accessibility test suite
- */
+
+
+
 export async function runAccessibilityTests(
   suites?: _ContrastTestSuite[]
 ): Promise<_TestRunResult[]> {
@@ -134,9 +134,9 @@ export async function runAccessibilityTests(
   return results;
 }
 
-/**
- * Generate accessibility report
- */
+
+
+
 export async function generateAccessibilityReport(
   options?: {
     root?: Element;
@@ -147,12 +147,12 @@ export async function generateAccessibilityReport(
 ): Promise<string> {
   const runner = new _ContrastTestRunner();
 
-  // Run page scan
+  
   const scanResults = await runner.scanPage(options);
 
-  // Run standard tests
+  
   const testResults = await runAccessibilityTests();
 
-  // Generate report
+  
   return runner.generateReport(testResults);
 }

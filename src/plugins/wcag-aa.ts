@@ -1,6 +1,6 @@
-/**
- * WCAG 2.1 Level AA Compliance Plugin
- */
+
+
+
 
 import type { EvaluationPlugin, EvaluationRule, EvaluationContext } from '../types';
 
@@ -107,13 +107,13 @@ const plugin: EvaluationPlugin = {
         const ariaLabelledby = input.getAttribute('aria-labelledby');
         const title = input.getAttribute('title');
         
-        // Check for associated label
+        
         let hasLabel = false;
         if (id) {
           hasLabel = !!document.querySelector(`label[for="${id}"]`);
         }
         
-        // Check if input is wrapped in label
+        
         if (!hasLabel) {
           hasLabel = !!input.closest('label');
         }
@@ -147,7 +147,7 @@ const plugin: EvaluationPlugin = {
         const heading = element as HTMLHeadingElement;
         const level = parseInt(heading.tagName.charAt(1));
         
-        // Find previous heading
+        
         const allHeadings = Array.from(document.querySelectorAll('h1, h2, h3, h4, h5, h6'));
         const currentIndex = allHeadings.indexOf(heading);
         
@@ -188,7 +188,7 @@ const plugin: EvaluationPlugin = {
         const ariaLabelledby = button.getAttribute('aria-labelledby');
         const title = button.getAttribute('title');
         
-        // Check for icon buttons with SVG
+        
         const hasSvgIcon = button.querySelector('svg');
         
         if (!text && !ariaLabel && !ariaLabelledby && !title) {
@@ -230,7 +230,7 @@ const plugin: EvaluationPlugin = {
           };
         }
         
-        // Basic validation of lang code
+        
         if (!/^[a-z]{2}(-[A-Z]{2})?$/.test(lang)) {
           return {
             severity: 'warning',

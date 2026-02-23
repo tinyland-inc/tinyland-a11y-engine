@@ -1,22 +1,22 @@
 import type { StreamMessage, EvaluationResult } from '../types';
 
-/**
- * StreamingClient for A11y Observability
- *
- * Streams accessibility evaluation results to the backend observability stack.
- * Uses HTTP POST with fallback to batching for reliability.
- *
- * Architecture:
- * - Primary: HTTP POST to /api/a11y/stream (reliable, works everywhere)
- * - Batching: Collects multiple evaluations before sending
- * - Retry: Exponential backoff on failures
- */
+
+
+
+
+
+
+
+
+
+
+
 export class StreamingClient {
   private messageQueue: StreamMessage[] = [];
   private isConnected = false;
   private batchTimer: number | null = null;
   private batchSize = 50;
-  private batchInterval = 100; // ms
+  private batchInterval = 100; 
   private retryAttempts = 0;
   private maxRetryAttempts = 5;
   private retryDelay = 1000;
@@ -27,15 +27,15 @@ export class StreamingClient {
     private onError?: (error: Error) => void
   ) {}
 
-  /**
-   * Connect using HTTP fallback (always available)
-   * No WebSocket connection needed - uses fetch API
-   */
+  
+
+
+
   connect() {
     try {
       console.log('[A11y Stream] Connecting via HTTP...');
 
-      // Test connection with a heartbeat
+      
       fetch(this.url, {
         method: 'POST',
         headers: {
@@ -53,7 +53,7 @@ export class StreamingClient {
           this.isConnected = true;
           this.retryAttempts = 0;
 
-          // Flush queued messages
+          
           this.flushQueue();
         } else {
           console.warn('[A11y Stream] Connection failed:', response.status);
@@ -86,9 +86,9 @@ export class StreamingClient {
     setTimeout(() => this.connect(), delay);
   }
   
-  /**
-   * Send evaluation results with batching
-   */
+  
+
+
   sendEvaluation(results: EvaluationResult[]) {
     const message: StreamMessage = {
       type: 'evaluation',
@@ -98,7 +98,7 @@ export class StreamingClient {
     
     this.messageQueue.push(message);
     
-    // Start batch timer if not already running
+    
     if (!this.batchTimer) {
       this.batchTimer = window.setTimeout(() => {
         this.flushBatch();
@@ -112,10 +112,10 @@ export class StreamingClient {
       return;
     }
     
-    // Get batch of messages
+    
     const batch = this.messageQueue.splice(0, this.batchSize);
     
-    // Compress if large
+    
     const payload = JSON.stringify(batch);
     const compressed = payload.length > 10000;
     
@@ -128,7 +128,7 @@ export class StreamingClient {
     
     this.send(message);
     
-    // Continue batching if more messages
+    
     if (this.messageQueue.length > 0) {
       this.batchTimer = window.setTimeout(() => {
         this.flushBatch();
@@ -140,7 +140,7 @@ export class StreamingClient {
   
   private async send(message: StreamMessage) {
     if (!this.isConnected) {
-      // Queue for later
+      
       this.messageQueue.unshift(message);
       return;
     }
@@ -156,7 +156,7 @@ export class StreamingClient {
 
       if (!response.ok) {
         console.warn('[A11y Stream] Send failed:', response.status);
-        // Queue for retry
+        
         this.messageQueue.unshift(message);
         this.scheduleReconnect();
       } else {
@@ -173,7 +173,7 @@ export class StreamingClient {
   private flushQueue() {
     if (!this.isConnected || this.messageQueue.length === 0) return;
     
-    // Send all queued messages
+    
     const messages = [...this.messageQueue];
     this.messageQueue = [];
     
@@ -181,14 +181,14 @@ export class StreamingClient {
   }
   
   private compress(data: string): string {
-    // Simple compression placeholder
-    // In production, use a proper compression library like pako
+    
+    
     return btoa(data);
   }
   
-  /**
-   * Send heartbeat to keep connection alive
-   */
+  
+
+
   sendHeartbeat() {
     const message: StreamMessage = {
       type: 'heartbeat',
@@ -209,9 +209,9 @@ export class StreamingClient {
     console.log('[A11y Stream] Disconnected');
   }
 
-  /**
-   * Get connection status
-   */
+  
+
+
   getStatus() {
     return {
       connected: this.isConnected,
@@ -220,12 +220,12 @@ export class StreamingClient {
     };
   }
 
-  // Socket.IO compatibility methods for globalAccessibility store
+  
   private eventListeners = new Map<string, Array<(...args: any[]) => void>>();
 
-  /**
-   * Socket.IO-style emit (sends via HTTP POST)
-   */
+  
+
+
   emit(event: string, data: any) {
     const message: StreamMessage = {
       type: event as any,
@@ -235,9 +235,9 @@ export class StreamingClient {
     this.send(message);
   }
 
-  /**
-   * Socket.IO-style event listener
-   */
+  
+
+
   on(event: string, callback: (...args: any[]) => void) {
     if (!this.eventListeners.has(event)) {
       this.eventListeners.set(event, []);
@@ -245,9 +245,9 @@ export class StreamingClient {
     this.eventListeners.get(event)!.push(callback);
   }
 
-  /**
-   * Check if connected (method form for optional chaining)
-   */
+  
+
+
   isConnectedMethod() {
     return this.isConnected;
   }

@@ -1,7 +1,7 @@
-/**
- * ARIA Validator
- * Validates ARIA attributes and roles for accessibility compliance
- */
+
+
+
+
 
 import type { EvaluationResult } from '../types';
 
@@ -27,9 +27,9 @@ export class AriaValidator {
     };
   }
 
-  /**
-   * Validate ARIA attributes on a container element
-   */
+  
+
+
   validate(container: Element): EvaluationResult[] {
     const results: EvaluationResult[] = [];
     const elements = container.querySelectorAll('[role], [aria-label], [aria-labelledby], [aria-describedby], [aria-hidden], [aria-expanded], [aria-pressed], [aria-selected], [aria-checked]');
@@ -56,34 +56,34 @@ export class AriaValidator {
     return results;
   }
 
-  /**
-   * Validate a single element's ARIA attributes
-   */
+  
+
+
   private validateElement(element: Element): string[] {
     const issues: string[] = [];
     const role = element.getAttribute('role');
 
-    // Check for valid role
+    
     if (role && this.options.checkRoles) {
       if (!this.isValidRole(role)) {
         issues.push(`Invalid ARIA role: ${role}`);
       }
     }
 
-    // Check for required ARIA labels on interactive elements
+    
     if (this.options.checkLabels) {
       if (this.isInteractiveElement(element) && !this.hasAccessibleName(element)) {
         issues.push('Interactive element missing accessible name (aria-label or aria-labelledby)');
       }
     }
 
-    // Check for valid ARIA states
+    
     if (this.options.checkStates) {
       const stateIssues = this.validateAriaStates(element);
       issues.push(...stateIssues);
     }
 
-    // Check for required properties based on role
+    
     if (this.options.checkProperties && role) {
       const propIssues = this.validateRoleProperties(element, role);
       issues.push(...propIssues);
@@ -92,9 +92,9 @@ export class AriaValidator {
     return issues;
   }
 
-  /**
-   * Check if a role is valid
-   */
+  
+
+
   private isValidRole(role: string): boolean {
     const validRoles = [
       'alert', 'alertdialog', 'application', 'article', 'banner', 'button',
@@ -112,9 +112,9 @@ export class AriaValidator {
     return validRoles.includes(role);
   }
 
-  /**
-   * Check if element is interactive
-   */
+  
+
+
   private isInteractiveElement(element: Element): boolean {
     const tagName = element.tagName.toLowerCase();
     const role = element.getAttribute('role');
@@ -126,16 +126,16 @@ export class AriaValidator {
            (role !== null && interactiveRoles.includes(role));
   }
 
-  /**
-   * Check if element has an accessible name
-   */
+  
+
+
   private hasAccessibleName(element: Element): boolean {
-    // Check for aria-label
+    
     if (element.hasAttribute('aria-label') && element.getAttribute('aria-label')?.trim()) {
       return true;
     }
 
-    // Check for aria-labelledby
+    
     const labelledBy = element.getAttribute('aria-labelledby');
     if (labelledBy) {
       const labelElement = document.getElementById(labelledBy);
@@ -144,17 +144,17 @@ export class AriaValidator {
       }
     }
 
-    // Check for text content
+    
     if (element.textContent?.trim()) {
       return true;
     }
 
-    // Check for title
+    
     if (element.hasAttribute('title') && element.getAttribute('title')?.trim()) {
       return true;
     }
 
-    // Check for input labels
+    
     if (element.tagName.toLowerCase() === 'input') {
       const id = element.getAttribute('id');
       if (id) {
@@ -168,9 +168,9 @@ export class AriaValidator {
     return false;
   }
 
-  /**
-   * Validate ARIA states
-   */
+  
+
+
   private validateAriaStates(element: Element): string[] {
     const issues: string[] = [];
     const booleanStates = ['aria-hidden', 'aria-expanded', 'aria-pressed', 'aria-selected', 'aria-checked', 'aria-disabled', 'aria-required'];
@@ -185,13 +185,13 @@ export class AriaValidator {
     return issues;
   }
 
-  /**
-   * Validate required properties for a role
-   */
+  
+
+
   private validateRoleProperties(element: Element, role: string): string[] {
     const issues: string[] = [];
 
-    // Required properties by role
+    
     const requiredProps: Record<string, string[]> = {
       'checkbox': ['aria-checked'],
       'combobox': ['aria-expanded'],
@@ -218,9 +218,9 @@ export class AriaValidator {
     return issues;
   }
 
-  /**
-   * Get a selector string for an element
-   */
+  
+
+
   private getSelector(element: Element): string {
     const id = element.id;
     if (id) {
@@ -234,9 +234,9 @@ export class AriaValidator {
   }
 }
 
-/**
- * Factory function to create AriaValidator
- */
+
+
+
 export function createAriaValidator(options?: AriaValidationOptions): AriaValidator {
   return new AriaValidator(options);
 }

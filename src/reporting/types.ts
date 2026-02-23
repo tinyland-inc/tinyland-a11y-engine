@@ -1,11 +1,11 @@
-/**
- * Types for accessibility reporting
- * These are duplicated from tests/accessibility/config.ts to avoid cross-boundary imports
- */
+
+
+
+
 
 import type { AxeResults } from 'axe-core';
 
-// Available themes to test
+
 export const THEMES = [
   'stonewall',
   'gold-nouveau',
@@ -22,7 +22,7 @@ export const THEMES = [
 
 export type Theme = typeof THEMES[number];
 
-// Routes to test for accessibility
+
 export const ROUTES = [
   '/',
   '/about',
@@ -45,7 +45,7 @@ export const ROUTES = [
 
 export type Route = typeof ROUTES[number];
 
-// Helper type for test results
+
 export interface AccessibilityTestResult {
   theme: Theme;
   route: Route;

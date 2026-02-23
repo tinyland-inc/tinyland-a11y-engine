@@ -1,14 +1,14 @@
-/**
- * @tummycrypt/tinyland-a11y-engine
- *
- * High-performance streaming accessibility evaluation engine with WCAG
- * contrast analysis, ARIA validation, and keyboard navigation checking.
- */
 
-// ========== Types (primary source) ==========
+
+
+
+
+
+
+
 export * from './types.js';
 
-// ========== Color utilities (inlined from $lib/utils/color) ==========
+
 export {
   hexToRgb,
   rgbToHex,
@@ -28,32 +28,32 @@ export {
   type RGB,
 } from './utils/color/index.js';
 
-// ========== Browser-specific contrast utilities ==========
+
 export { getComputedColor, getEffectiveBackgroundColor } from './contrast.js';
 
-// ========== Validators ==========
-// Note: validators.js and validators/index.js both export validateContrast.
-// We use named exports from validators.js to avoid the duplicate.
+
+
+
 export type { ValidationError, ValidationWarning, ValidationResult, ValidationContext, ValidationOptions } from './validators.js';
 export { validateTransparency, validateThemeConsistency, validateFocusIndicator, validateTextSize } from './validators.js';
 export * from './validators/index.js';
 
-// ========== Svelte actions (requires svelte peerDependency) ==========
+
 export * from './actions.js';
 
-// ========== Preprocessor ==========
+
 export {
   accessibilityPreprocessor,
   accessibilityPreprocessor as createAccessibilityPreprocessor,
 } from './preprocessor.js';
 
-// ========== Engine ==========
+
 export { EventEmitter } from './engine/events.js';
 
-// ========== Orchestrator ==========
+
 export { AccessibilityOrchestrator } from './AccessibilityOrchestrator.js';
 
-// ========== AccessibilityStream (facade) ==========
+
 import type {
   AccessibilityIssue,
   EvaluationResult,
@@ -63,7 +63,7 @@ import type {
 } from './types.js';
 import { EventEmitter } from './engine/events.js';
 
-// AccessibilityConfig extends EvaluationConfig with streaming options
+
 export interface AccessibilityConfig extends EvaluationConfig {
   streaming?: {
     endpoint?: string;
@@ -91,10 +91,10 @@ export interface AccessibilityConfig extends EvaluationConfig {
   };
 }
 
-/**
- * Simplified AccessibilityStream class that provides streaming evaluation.
- * This is a facade that coordinates sampling, evaluation, and streaming.
- */
+
+
+
+
 export class AccessibilityStream extends EventEmitter {
   private config: AccessibilityConfig;
   private isRunning = false;
@@ -207,7 +207,7 @@ export class AccessibilityStream extends EventEmitter {
   }
 
   registerRule(_rule: any): void {
-    // Custom rule registration
+    
   }
 
   async destroy(): Promise<void> {
@@ -216,14 +216,14 @@ export class AccessibilityStream extends EventEmitter {
   }
 }
 
-// Factory function
+
 export function createAccessibilityStream(config: AccessibilityConfig): AccessibilityStream {
   return new AccessibilityStream(config);
 }
 
-/**
- * Quick contrast validation helper
- */
+
+
+
 export async function quickContrastCheck(
   foreground: string,
   background: string

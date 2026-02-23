@@ -1,6 +1,6 @@
-/**
- * Worker Pool - Stub module for web worker management
- */
+
+
+
 
 export interface WorkerResult {
   passed: boolean;
@@ -21,12 +21,12 @@ export class WorkerPool {
   }
 
   async processBatches<T>(tasks: T[], _batchSize: number): Promise<WorkerResult[]> {
-    // Stub implementation - returns empty results
+    
     return [];
   }
 
   async terminate(): Promise<void> {
-    // Cleanup workers
+    
   }
 
   getWorkerCount(): number {

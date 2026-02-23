@@ -1,14 +1,14 @@
-/**
- * Color space conversions
- * Consolidates conversion logic from colorConversion.ts and accessibility/contrast.ts
- */
+
+
+
+
 
 import type { RGB, HSL, OKLCH, OKLAB } from './types';
 import { conversionCache } from './cache';
 
-/**
- * Convert hex color to RGB
- */
+
+
+
 export function hexToRgb(hex: string): RGB {
 	const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})?$/i.exec(hex);
 	if (!result) {
@@ -23,9 +23,9 @@ export function hexToRgb(hex: string): RGB {
 	};
 }
 
-/**
- * Convert RGB to hex color
- */
+
+
+
 export function rgbToHex(rgb: RGB): string {
 	const toHex = (n: number) => {
 		const hex = Math.round(Math.max(0, Math.min(255, n))).toString(16);
@@ -39,9 +39,9 @@ export function rgbToHex(rgb: RGB): string {
 	return hex;
 }
 
-/**
- * Convert RGB to HSL
- */
+
+
+
 export function rgbToHsl(rgb: RGB): HSL {
 	const r = rgb.r / 255;
 	const g = rgb.g / 255;
@@ -81,9 +81,9 @@ export function rgbToHsl(rgb: RGB): HSL {
 	};
 }
 
-/**
- * Convert HSL to RGB
- */
+
+
+
 export function hslToRgb(hsl: HSL): RGB {
 	const h = hsl.h / 360;
 	const s = hsl.s / 100;
@@ -114,15 +114,15 @@ export function hslToRgb(hsl: HSL): RGB {
 	};
 }
 
-/**
- * Convert OKLCH to RGB (0-255)
- */
+
+
+
 export function oklchToRgb(l: number, c: number, h: number): RGB {
 	const cacheKey = `oklch:${l},${c},${h}`;
 	const cached = conversionCache.get(cacheKey);
 	if (cached) return cached;
 
-	// Convert to Lab
+	
 	const hRad = (h * Math.PI) / 180;
 	const a = c * Math.cos(hRad);
 	const b = c * Math.sin(hRad);
@@ -132,16 +132,16 @@ export function oklchToRgb(l: number, c: number, h: number): RGB {
 	return result;
 }
 
-/**
- * Convert OKLAB to RGB (0-255)
- * OKLAB is a perceptually uniform color space
- */
+
+
+
+
 export function oklabToRgb(l: number, a: number, b: number): RGB {
 	const cacheKey = `oklab:${l},${a},${b}`;
 	const cached = conversionCache.get(cacheKey);
 	if (cached) return cached;
 
-	// OKLab to linear RGB matrix
+	
 	const m1 = [
 		[1.0, 0.3963377774, 0.2158037573],
 		[1.0, -0.1055613458, -0.0638541728],
@@ -156,7 +156,7 @@ export function oklabToRgb(l: number, a: number, b: number): RGB {
 
 	const lmsCubed = lms.map((x) => x * x * x);
 
-	// LMS to linear RGB matrix
+	
 	const m2 = [
 		[4.0767416621, -3.3077115913, 0.2309699292],
 		[-1.2684380046, 2.6097574011, -0.3413193965],
@@ -179,14 +179,14 @@ export function oklabToRgb(l: number, a: number, b: number): RGB {
 	return result;
 }
 
-/**
- * Convert RGB to OKLCH
- */
+
+
+
 export function rgbToOklch(rgb: RGB): OKLCH {
-	// First convert to OKLAB
+	
 	const oklab = rgbToOklab(rgb);
 
-	// Then convert OKLAB to OKLCH
+	
 	const c = Math.sqrt(oklab.a * oklab.a + oklab.b * oklab.b);
 	let h = Math.atan2(oklab.b, oklab.a) * (180 / Math.PI);
 	if (h < 0) h += 360;
@@ -199,16 +199,16 @@ export function rgbToOklch(rgb: RGB): OKLCH {
 	};
 }
 
-/**
- * Convert RGB to OKLAB
- */
+
+
+
 export function rgbToOklab(rgb: RGB): OKLAB {
-	// Convert sRGB to linear RGB
+	
 	const linearR = srgbToLinear(rgb.r / 255);
 	const linearG = srgbToLinear(rgb.g / 255);
 	const linearB = srgbToLinear(rgb.b / 255);
 
-	// Linear RGB to LMS matrix
+	
 	const m1 = [
 		[0.4122214708, 0.5363325363, 0.0514459929],
 		[0.2119034982, 0.6806995451, 0.1073969566],
@@ -221,10 +221,10 @@ export function rgbToOklab(rgb: RGB): OKLAB {
 		linearR * m1[2][0] + linearG * m1[2][1] + linearB * m1[2][2]
 	];
 
-	// Apply cube root to LMS
+	
 	const lmsCubeRoot = lms.map((x) => Math.cbrt(x));
 
-	// LMS to OKLab matrix
+	
 	const m2 = [
 		[0.2104542553, 0.793617785, -0.0040720468],
 		[1.9779984951, -2.428592205, 0.4505937099],
@@ -239,9 +239,9 @@ export function rgbToOklab(rgb: RGB): OKLAB {
 	};
 }
 
-/**
- * Convert OKLCH to OKLAB
- */
+
+
+
 export function oklchToOklab(oklch: OKLCH): OKLAB {
 	const hRad = (oklch.h * Math.PI) / 180;
 	return {
@@ -252,9 +252,9 @@ export function oklchToOklab(oklch: OKLCH): OKLAB {
 	};
 }
 
-/**
- * Convert OKLAB to OKLCH
- */
+
+
+
 export function oklabToOklch(oklab: OKLAB): OKLCH {
 	const c = Math.sqrt(oklab.a * oklab.a + oklab.b * oklab.b);
 	let h = Math.atan2(oklab.b, oklab.a) * (180 / Math.PI);
@@ -268,9 +268,9 @@ export function oklabToOklch(oklab: OKLAB): OKLCH {
 	};
 }
 
-/**
- * Convert linear RGB to sRGB
- */
+
+
+
 function linearToSrgb(value: number): number {
 	if (value <= 0.0031308) {
 		return value * 12.92;
@@ -278,9 +278,9 @@ function linearToSrgb(value: number): number {
 	return 1.055 * Math.pow(value, 1 / 2.4) - 0.055;
 }
 
-/**
- * Convert sRGB to linear RGB
- */
+
+
+
 function srgbToLinear(value: number): number {
 	if (value <= 0.04045) {
 		return value / 12.92;
@@ -288,16 +288,16 @@ function srgbToLinear(value: number): number {
 	return Math.pow((value + 0.055) / 1.055, 2.4);
 }
 
-/**
- * Clamp value between 0 and 1
- */
+
+
+
 function clamp(value: number): number {
 	return Math.max(0, Math.min(1, value));
 }
 
-/**
- * Convert OKLCH CSS string to RGB values
- */
+
+
+
 export function oklchStringToRgbValues(oklchString: string): string {
 	const match = oklchString.match(
 		/oklch\(\s*(\d+(?:\.\d+)?%?)\s+(\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)(deg|grad|rad|turn)?\s*(?:\/\s*(\d+(?:\.\d+)?%?))?\s*\)/i
@@ -319,9 +319,9 @@ export function oklchStringToRgbValues(oklchString: string): string {
 	return `${rgb.r} ${rgb.g} ${rgb.b}`;
 }
 
-/**
- * Alpha blend two colors
- */
+
+
+
 export function alphaBlend(foreground: RGB, background: RGB): RGB {
 	const alpha = foreground.a ?? 1;
 	const invAlpha = 1 - alpha;

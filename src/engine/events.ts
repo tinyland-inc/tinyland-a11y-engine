@@ -1,6 +1,6 @@
-/**
- * Simple EventEmitter implementation for the accessibility system
- */
+
+
+
 
 export class EventEmitter {
   private events: Map<string, Set<Function>> = new Map();
