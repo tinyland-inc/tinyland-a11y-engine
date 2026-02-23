@@ -5,7 +5,7 @@ import { StreamingClient } from '../src/streaming/StreamingClient';
 import { ContrastAnalyzer } from '../src/engine/ContrastAnalyzer';
 import type { EvaluationConfig, EvaluationResult, EvaluationStats } from '../src/types';
 
-// Mock dependencies
+
 vi.mock('../src/sampler/DOMSampler');
 vi.mock('../src/streaming/StreamingClient');
 vi.mock('../src/engine/ContrastAnalyzer');
@@ -35,10 +35,10 @@ describe('AccessibilityOrchestrator', () => {
       viewportOnly: true
     };
 
-    // Cast mock to match expected signature for TS7 compatibility
+    
     onResultsMock = vi.fn() as unknown as (results: EvaluationResult[], stats: EvaluationStats) => void;
 
-    // Setup mocks - use regular functions (not arrow functions) so they work as constructors with `new`
+    
     mockSampler = {
       sampleElements: vi.fn().mockReturnValue([]),
       observeChanges: vi.fn(),
@@ -126,7 +126,7 @@ describe('AccessibilityOrchestrator', () => {
       orchestrator.start();
       orchestrator.stop();
 
-      // Should not trigger more evaluations
+      
       vi.advanceTimersByTime(config.evaluationInterval);
 
       expect(mockSampler.destroy).toHaveBeenCalled();
@@ -159,7 +159,7 @@ describe('AccessibilityOrchestrator', () => {
       expect(mockContrastAnalyzer.analyzeElement).toHaveBeenCalledTimes(1);
       expect(mockContrastAnalyzer.analyzeElement).toHaveBeenCalledWith(visibleElement);
 
-      // Cleanup
+      
       document.body.removeChild(visibleElement);
       document.body.removeChild(hiddenElement);
     });

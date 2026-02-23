@@ -30,7 +30,7 @@ describe('KeyboardNavigationValidator', () => {
 
       const results = validator.validate(testContainer);
 
-      // The validator reports the count of focusable elements
+      
       expect(results.some(r =>
         r.message.includes('focusable elements')
       )).toBe(true);
@@ -46,9 +46,9 @@ describe('KeyboardNavigationValidator', () => {
 
       const results = validator.validate(testContainer);
 
-      // The focusable selector 'a[href], button, ..., [tabindex]:not([tabindex="-1"])'
-      // matches: both buttons (via 'button' selector) + div[tabindex="0"]
-      // = 3 focusable elements (buttons are inherently focusable regardless of tabindex)
+      
+      
+      
       const focusableMessage = results.find(r =>
         r.message.includes('focusable elements')
       );
@@ -89,7 +89,7 @@ describe('KeyboardNavigationValidator', () => {
         r.message.includes('positive tabindex') && r.severity === 'warning'
       );
 
-      expect(positiveTabindexResults).toHaveLength(3); // 3 elements with positive tabindex
+      expect(positiveTabindexResults).toHaveLength(3); 
       expect(positiveTabindexResults[0].wcagCriteria).toBe('2.4.3');
     });
 
@@ -131,14 +131,14 @@ describe('KeyboardNavigationValidator', () => {
 
       const results = validator.validate(testContainer);
 
-      // In jsdom, focus styles are not computed the same way as in real browsers.
-      // The validator checks outlineStyle, boxShadow, and border changes.
-      // jsdom may report elements as lacking focus indicators since it doesn't
-      // apply default browser focus styles.
+      
+      
+      
+      
       const focusResults = results.filter(r =>
         r.message.includes('focus indicator')
       );
-      // In jsdom environment, focus indicator detection depends on computed styles
+      
       expect(focusResults).toBeDefined();
     });
 
@@ -157,11 +157,11 @@ describe('KeyboardNavigationValidator', () => {
       `;
 
       const results = validator.validate(testContainer);
-      // jsdom doesn't fully support computed focus styles, so we just verify
-      // the validator runs without errors
+      
+      
       expect(results).toBeDefined();
 
-      // Cleanup
+      
       document.head.removeChild(style);
     });
   });
@@ -177,12 +177,12 @@ describe('KeyboardNavigationValidator', () => {
 
       const results = validator.validate(testContainer);
 
-      // The validator checks for close buttons using querySelectorAll with
-      // 'button[aria-label*="close" i]' etc. Since no close button exists,
-      // it should warn about potential keyboard trap.
-      // NOTE: The :has-text() pseudo-selector is not supported in jsdom,
-      // so it may fall back or throw. The validator still detects the issue
-      // if no close/cancel aria-label buttons are found.
+      
+      
+      
+      
+      
+      
       const trapWarnings = results.filter(r =>
         r.message.includes('keyboard trap') ||
         r.message.includes('Modal dialog')
@@ -201,13 +201,13 @@ describe('KeyboardNavigationValidator', () => {
 
       const results = validator.validate(testContainer);
 
-      // With a close button (aria-label contains "close"), the validator
-      // should not produce keyboard trap warnings for this modal
+      
+      
       const trapWarnings = results.filter(r =>
         r.message.includes('keyboard trap')
       );
 
-      // Should not warn if close button exists
+      
       expect(trapWarnings.length).toBe(0);
     });
   });
@@ -226,7 +226,7 @@ describe('KeyboardNavigationValidator', () => {
         r.message.includes('click handler')
       );
 
-      // Each non-semantic element with onclick should be flagged
+      
       expect(clickableNonInteractive.length).toBeGreaterThanOrEqual(3);
     });
 
@@ -253,7 +253,7 @@ describe('KeyboardNavigationValidator', () => {
 
       const results = validator.validate(testContainer);
 
-      // First custom button should error (no tabindex)
+      
       expect(results.some(r =>
         r.message.includes('lacks tabindex') &&
         r.severity === 'error'
@@ -263,8 +263,8 @@ describe('KeyboardNavigationValidator', () => {
 
   describe('Skip Links', () => {
     it('should check for skip navigation links', () => {
-      // The validator's validateSkipLinks only runs when container === document.body
-      // Create nav and main in the body
+      
+      
       const nav = document.createElement('nav');
       nav.innerHTML = '<a href="#home">Home</a><a href="#about">About</a>';
       document.body.appendChild(nav);
@@ -274,7 +274,7 @@ describe('KeyboardNavigationValidator', () => {
       main.textContent = 'Content';
       document.body.appendChild(main);
 
-      // Validate at body level so skip link detection is triggered
+      
       const results = validator.validate(document.body);
 
       expect(results.some(r =>
@@ -282,7 +282,7 @@ describe('KeyboardNavigationValidator', () => {
         r.message.includes('skip')
       )).toBe(true);
 
-      // Cleanup
+      
       document.body.removeChild(nav);
       document.body.removeChild(main);
     });
@@ -310,7 +310,7 @@ describe('KeyboardNavigationValidator', () => {
 
       expect(skipLinkWarnings).toHaveLength(0);
 
-      // Cleanup
+      
       document.body.removeChild(skipLink);
       document.body.removeChild(nav);
       document.body.removeChild(main);
@@ -330,7 +330,7 @@ describe('KeyboardNavigationValidator', () => {
 
       const results = validator.validate(testContainer);
 
-      // Form fields without labels should be flagged
+      
       expect(results.some(r =>
         r.message.includes('label') &&
         r.severity === 'error'
@@ -375,8 +375,8 @@ describe('KeyboardNavigationValidator', () => {
 
       const results = validator.validate(testContainer);
 
-      // The validator does not currently check for visual vs DOM order discrepancies.
-      // It processes focusable elements and checks tab order/indicators.
+      
+      
       expect(results).toBeDefined();
       expect(Array.isArray(results)).toBe(true);
     });
@@ -393,7 +393,7 @@ describe('KeyboardNavigationValidator', () => {
 
       const results = validator.validate(testContainer);
 
-      // Should recognize proper ARIA tab pattern
+      
       const tabErrors = results.filter(r =>
         r.selector.includes('[role="tab"]') &&
         r.severity === 'error'
@@ -423,8 +423,8 @@ describe('KeyboardNavigationValidator', () => {
 
       const results = validator.validate(testContainer);
 
-      // The validator processes focusable elements and tab order
-      // It does not specifically detect dropdown/submenu patterns
+      
+      
       expect(results).toBeDefined();
       expect(Array.isArray(results)).toBe(true);
     });
@@ -457,7 +457,7 @@ describe('KeyboardNavigationValidator', () => {
         r.message.includes('label')
       );
 
-      // Well-structured form with labels should have no label errors
+      
       expect(formLabelErrors.length).toBe(0);
     });
   });

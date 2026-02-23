@@ -2,15 +2,15 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ContrastAnalyzer } from '../../src/engine/ContrastAnalyzer';
 import type { ContrastEvaluation } from '../../src/types';
 
-/**
- * Helper to create a mock canvas context that parses CSS color strings
- * into RGBA pixel data. jsdom does not implement HTMLCanvasElement.getContext(),
- * so we provide a minimal mock that converts well-known color values.
- */
+
+
+
+
+
 function createMockCanvasContext() {
   let currentFillStyle = '';
 
-  // Map common CSS color values to RGBA pixel data
+  
   const colorMap: Record<string, [number, number, number, number]> = {
     'rgb(0, 0, 0)': [0, 0, 0, 255],
     '#000': [0, 0, 0, 255],
@@ -56,12 +56,12 @@ function createMockCanvasContext() {
     fillRect: vi.fn(),
     getImageData: vi.fn().mockImplementation(() => {
       const normalized = currentFillStyle.trim().toLowerCase();
-      // Try exact match first
+      
       const rgba = colorMap[normalized] || colorMap[currentFillStyle];
       if (rgba) {
         return { data: new Uint8ClampedArray(rgba) };
       }
-      // Default to black if unknown color
+      
       return { data: new Uint8ClampedArray([0, 0, 0, 255]) };
     }),
   };
@@ -69,9 +69,9 @@ function createMockCanvasContext() {
   return ctx;
 }
 
-/**
- * Patch document.createElement to return a canvas element with a working mock context.
- */
+
+
+
 function patchCanvasGetContext() {
   const originalCreateElement = document.createElement.bind(document);
   const mockCtx = createMockCanvasContext();
@@ -92,7 +92,7 @@ describe('ContrastAnalyzer', () => {
   let testContainer: HTMLDivElement;
 
   beforeEach(() => {
-    // Mock window.matchMedia (not available in jsdom)
+    
     if (!window.matchMedia) {
       Object.defineProperty(window, 'matchMedia', {
         writable: true,
@@ -109,11 +109,11 @@ describe('ContrastAnalyzer', () => {
       });
     }
 
-    // Patch canvas before creating the analyzer so its constructor gets a working context
+    
     patchCanvasGetContext();
     analyzer = new ContrastAnalyzer();
 
-    // Create test container
+    
     testContainer = document.createElement('div');
     testContainer.id = 'test-container';
     document.body.appendChild(testContainer);
@@ -178,11 +178,11 @@ describe('ContrastAnalyzer', () => {
 
       const result = analyzer.analyzeElement(element);
 
-      // In jsdom + canvas mock, transparent resolves to rgba(0,0,0,0) but the source
-      // parseColor() only extracts r,g,b (ignoring alpha), so transparent becomes
-      // effectively black (0,0,0). Black on white = 21:1 ratio, which passes as 'info'.
-      // The source does not explicitly handle transparent text as a special case.
-      // This test verifies the analyzer does not crash on transparent colors.
+      
+      
+      
+      
+      
       expect(result).toBeTruthy();
       if (result) {
         expect(['info', 'error', 'warning']).toContain(result.severity);
@@ -285,7 +285,7 @@ describe('ContrastAnalyzer', () => {
 
       expect(result).toBeTruthy();
       if (result) {
-        // 18px bold text IS large text per WCAG (>= 14px bold)
+        
         expect(result.metadata.largeText).toBe(true);
       }
     });
@@ -320,7 +320,7 @@ describe('ContrastAnalyzer', () => {
 
       expect(result).toBeTruthy();
       if (result) {
-        // Black on white (21:1) should pass
+        
         expect(result.severity).toBe('info');
         expect(result.message.toLowerCase()).toContain('contrast ratio');
       }
@@ -339,7 +339,7 @@ describe('ContrastAnalyzer', () => {
       expect(result).toBeTruthy();
       if (result) {
         expect(result.severity).toBe('error');
-        // The source sets wcagLevel to 'AA' for all contrast results
+        
         expect(result.wcagLevel).toBe('AA');
         expect(result.message).toContain('Contrast ratio');
       }
@@ -373,7 +373,7 @@ describe('ContrastAnalyzer', () => {
 
       expect(result).toBeTruthy();
       if (result) {
-        // #999 on white is about 2.8:1, which clearly fails 4.5:1 AA for normal text
+        
         expect(result.severity).toBe('error');
       }
     });
@@ -405,14 +405,14 @@ describe('ContrastAnalyzer', () => {
       const result = analyzer.analyzeElement(element);
 
       expect(result).toBeTruthy();
-      // The source getSelector uses tagName + up to 2 non-svelte classes
+      
       expect(result?.selector).toContain('p');
       expect(result?.selector).toContain('text-primary');
       expect(result?.selector).toContain('large-text');
     });
 
     it('should generate path-based selector for repeated elements', () => {
-      // Add multiple paragraphs
+      
       for (let i = 0; i < 3; i++) {
         const p = document.createElement('p');
         p.style.color = 'rgb(153, 153, 153)';
@@ -425,7 +425,7 @@ describe('ContrastAnalyzer', () => {
       const result = analyzer.analyzeElement(secondParagraph);
 
       expect(result).toBeTruthy();
-      // The source builds a parent > child selector path, not nth-child
+      
       expect(result?.selector).toContain('p');
     });
   });
@@ -438,15 +438,15 @@ describe('ContrastAnalyzer', () => {
       element.textContent = 'Cached test';
       testContainer.appendChild(element);
 
-      // First analysis
+      
       const result1 = analyzer.analyzeElement(element);
 
-      // Second analysis should use cache for the ratio
+      
       const result2 = analyzer.analyzeElement(element);
 
       expect(result1).toBeTruthy();
       expect(result2).toBeTruthy();
-      // Both should produce the same ratio
+      
       expect(result1?.metadata.ratio).toBe(result2?.metadata.ratio);
     });
 
@@ -457,14 +457,14 @@ describe('ContrastAnalyzer', () => {
       element.textContent = 'Test';
       testContainer.appendChild(element);
 
-      // Analyze and cache
+      
       const result1 = analyzer.analyzeElement(element);
       expect(result1).toBeTruthy();
 
-      // Clear cache via clearCache (destroy also nullifies canvas/ctx)
+      
       analyzer.clearCache();
 
-      // Should create new result from fresh cache
+      
       const result2 = analyzer.analyzeElement(element);
       expect(result2).toBeTruthy();
       expect(result2?.metadata.ratio).toBe(result1?.metadata.ratio);
@@ -480,12 +480,12 @@ describe('ContrastAnalyzer', () => {
     it('should handle elements without computed styles', () => {
       const element = document.createElement('p');
       element.textContent = 'Test';
-      // Not appended to DOM, but jsdom still provides computed styles
-      // The analyzer may still work since getComputedStyle returns defaults
+      
+      
 
       const result = analyzer.analyzeElement(element);
-      // In jsdom, getComputedStyle works even for detached elements
-      // Result depends on whether the default bg color is transparent
+      
+      
       expect(result === null || result !== null).toBe(true);
     });
 
@@ -496,10 +496,10 @@ describe('ContrastAnalyzer', () => {
       element.textContent = 'Test';
       testContainer.appendChild(element);
 
-      // Browser will convert invalid color to default or computed value
+      
       const result = analyzer.analyzeElement(element);
 
-      // Should either handle gracefully or use computed value
+      
       if (result) {
         expect(result.metadata.foreground).toBeTruthy();
       }
@@ -542,7 +542,7 @@ describe('ContrastAnalyzer', () => {
       const result = analyzer.analyzeElement(link);
 
       expect(result).toBeTruthy();
-      // Background should be inherited from parent
+      
       expect(result?.metadata.background).toBe('rgb(255, 255, 255)');
     });
 
@@ -556,7 +556,7 @@ describe('ContrastAnalyzer', () => {
 
       const result = analyzer.analyzeElement(element);
 
-      // Should handle gradient by using computed backgroundColor or skip
+      
       expect(result).toBeDefined();
     });
   });

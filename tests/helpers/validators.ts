@@ -1,7 +1,7 @@
-/**
- * Accessibility validation utilities for testing
- * Migrated from tests/accessibility/validators.ts
- */
+
+
+
+
 
 import type { RGB } from '../../src/contrast';
 import { getContrastRatio, hexToRgb, simulateColorBlindness } from '../../src/contrast';
@@ -25,9 +25,9 @@ export interface ValidationResult {
   suggestions: string[];
 }
 
-/**
- * Validate contrast between two colors
- */
+
+
+
 export function validateContrast(
   foreground: string,
   background: string,
@@ -47,8 +47,8 @@ export function validateContrast(
   const warnings: ValidationWarning[] = [];
   const suggestions: string[] = [];
 
-  // Determine required ratio based on level and component type
-  let requiredRatio = 4.5; // Default AA text
+  
+  let requiredRatio = 4.5; 
   if (level === 'AAA') {
     requiredRatio = componentType === 'large-text' ? 4.5 : 7;
   } else {
@@ -66,7 +66,7 @@ export function validateContrast(
     suggestions.push(`Increase contrast to at least ${requiredRatio}:1`);
   }
 
-  // Check color blindness
+  
   if (includeColorBlindness) {
     const types: Array<'protanopia' | 'deuteranopia' | 'tritanopia'> = ['protanopia', 'deuteranopia', 'tritanopia'];
 
@@ -87,9 +87,9 @@ export function validateContrast(
   return { valid, ratio, errors, warnings, suggestions };
 }
 
-/**
- * Generate random color combinations for testing
- */
+
+
+
 export function* generateColorCombinations(
   count: number,
   options: {
@@ -100,7 +100,7 @@ export function* generateColorCombinations(
 ): Generator<[RGB, RGB]> {
   const { seed = Date.now(), colorSpace = 'rgb', includeTransparency = false } = options;
 
-  // Simple seeded random
+  
   let s = seed;
   const random = () => {
     s = (s * 1103515245 + 12345) & 0x7fffffff;
@@ -112,7 +112,7 @@ export function* generateColorCombinations(
     let bg: RGB;
 
     if (colorSpace === 'hsl') {
-      // Generate in HSL then convert
+      
       fg = hslToRgb(random() * 360, random(), random());
       bg = hslToRgb(random() * 360, random(), random());
     } else {
@@ -134,9 +134,9 @@ export function* generateColorCombinations(
   }
 }
 
-/**
- * Generate edge case color combinations for testing
- */
+
+
+
 export function generateEdgeCases(): Array<[RGB, RGB, string]> {
   return [
     [{ r: 0, g: 0, b: 0 }, { r: 255, g: 255, b: 255 }, 'Black on white'],
@@ -149,9 +149,9 @@ export function generateEdgeCases(): Array<[RGB, RGB, string]> {
   ];
 }
 
-/**
- * Convert HSL to RGB
- */
+
+
+
 function hslToRgb(h: number, s: number, l: number): RGB {
   const c = (1 - Math.abs(2 * l - 1)) * s;
   const x = c * (1 - Math.abs(((h / 60) % 2) - 1));

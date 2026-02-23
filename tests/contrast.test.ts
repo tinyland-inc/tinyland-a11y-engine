@@ -1,7 +1,7 @@
-/**
- * Contrast Validation Tests
- * Property-based testing for WCAG contrast algorithms
- */
+
+
+
+
 
 import { describe, it, expect } from 'vitest';
 import {
@@ -50,13 +50,13 @@ describe('Color Conversion', () => {
 
 describe('Relative Luminance', () => {
   it('should calculate correct luminance for known values', () => {
-    // White should have luminance of 1
+    
     expect(getRelativeLuminance({ r: 255, g: 255, b: 255 })).toBeCloseTo(1, 5);
 
-    // Black should have luminance of 0
+    
     expect(getRelativeLuminance({ r: 0, g: 0, b: 0 })).toBeCloseTo(0, 5);
 
-    // Middle gray should be around 0.2159
+    
     expect(getRelativeLuminance({ r: 128, g: 128, b: 128 })).toBeCloseTo(0.2159, 3);
   });
 
@@ -73,21 +73,21 @@ describe('Relative Luminance', () => {
 
 describe('Contrast Ratio', () => {
   it('should calculate correct ratios for WCAG examples', () => {
-    // Black on white: 21:1
+    
     const blackOnWhite = getContrastRatio(
       { r: 0, g: 0, b: 0 },
       { r: 255, g: 255, b: 255 }
     );
     expect(blackOnWhite).toBeCloseTo(21, 1);
 
-    // White on black: 21:1 (contrast is symmetrical)
+    
     const whiteOnBlack = getContrastRatio(
       { r: 255, g: 255, b: 255 },
       { r: 0, g: 0, b: 0 }
     );
     expect(whiteOnBlack).toBeCloseTo(21, 1);
 
-    // Same color: 1:1
+    
     const sameColor = getContrastRatio(
       { r: 128, g: 128, b: 128 },
       { r: 128, g: 128, b: 128 }
@@ -97,8 +97,8 @@ describe('Contrast Ratio', () => {
 
   it('should pass WCAG AA for 4.5:1 ratio', () => {
     const result = checkContrast(
-      { r: 59, g: 59, b: 59 }, // Dark gray
-      { r: 255, g: 255, b: 255 } // White
+      { r: 59, g: 59, b: 59 }, 
+      { r: 255, g: 255, b: 255 } 
     );
 
     expect(result.ratio).toBeGreaterThanOrEqual(4.5);
@@ -108,8 +108,8 @@ describe('Contrast Ratio', () => {
 
   it('should pass WCAG AAA for 7:1 ratio', () => {
     const result = checkContrast(
-      { r: 34, g: 34, b: 34 }, // Very dark gray
-      { r: 255, g: 255, b: 255 } // White
+      { r: 34, g: 34, b: 34 }, 
+      { r: 255, g: 255, b: 255 } 
     );
 
     expect(result.ratio).toBeGreaterThanOrEqual(7);
@@ -119,7 +119,7 @@ describe('Contrast Ratio', () => {
 
 describe('Alpha Blending', () => {
   it('should blend transparent colors correctly', () => {
-    // Semi-transparent black on white
+    
     const result = alphaBlend(
       { r: 0, g: 0, b: 0, a: 0.5 },
       { r: 255, g: 255, b: 255 }
@@ -130,8 +130,8 @@ describe('Alpha Blending', () => {
 
   it('should handle fully transparent colors', () => {
     const result = alphaBlend(
-      { r: 255, g: 0, b: 0, a: 0 }, // Fully transparent red
-      { r: 0, g: 0, b: 255 } // Blue background
+      { r: 255, g: 0, b: 0, a: 0 }, 
+      { r: 0, g: 0, b: 255 } 
     );
 
     expect(result).toEqual({ r: 0, g: 0, b: 255, a: 1 });
@@ -139,8 +139,8 @@ describe('Alpha Blending', () => {
 
   it('should handle fully opaque colors', () => {
     const result = alphaBlend(
-      { r: 255, g: 0, b: 0, a: 1 }, // Opaque red
-      { r: 0, g: 0, b: 255 } // Blue background
+      { r: 255, g: 0, b: 0, a: 1 }, 
+      { r: 0, g: 0, b: 255 } 
     );
 
     expect(result).toEqual({ r: 255, g: 0, b: 0, a: 1 });
@@ -158,15 +158,15 @@ describe('Color Perception', () => {
   it('should simulate color blindness', () => {
     const red = { r: 255, g: 0, b: 0 };
 
-    // Protanopia (red-blind) should alter red significantly
+    
     const protanopia = simulateColorBlindness(red, 'protanopia');
     expect(protanopia.r).toBeLessThan(red.r);
 
-    // Deuteranopia (green-blind) should also affect red perception
+    
     const deuteranopia = simulateColorBlindness(red, 'deuteranopia');
     expect(deuteranopia).not.toEqual(red);
 
-    // Tritanopia (blue-blind) should have less effect on pure red
+    
     const tritanopia = simulateColorBlindness(red, 'tritanopia');
     expect(tritanopia.r).toBeCloseTo(red.r * 0.95, 0);
   });
@@ -174,14 +174,14 @@ describe('Color Perception', () => {
 
 describe('Property-Based Testing', () => {
   it('should maintain contrast ratio symmetry', () => {
-    // Generate random color pairs
+    
     const generator = generateColorCombinations(50, { seed: 12345 });
 
     for (const [fg, bg] of generator) {
       const ratio1 = getContrastRatio(fg, bg);
       const ratio2 = getContrastRatio(bg, fg);
 
-      // Contrast ratio should be the same regardless of order
+      
       expect(ratio1).toBeCloseTo(ratio2, 5);
     }
   });
@@ -204,25 +204,25 @@ describe('Property-Based Testing', () => {
       const ratio = getContrastRatio(fg, bg);
       const result = checkContrast(fg, bg);
 
-      // All calculations should complete without error
+      
       expect(ratio).toBeDefined();
       expect(result).toBeDefined();
 
-      // Validate specific edge cases
+      
       if (description === 'Black on white' || description === 'White on black') {
         expect(ratio).toBeCloseTo(21, 1);
       } else if (description === 'Same color') {
         expect(ratio).toBeCloseTo(1, 1);
       } else if (description === 'Fully transparent') {
-        // Transparent color should blend to background
+        
         const blended = alphaBlend(fg, bg);
         expect(getContrastRatio(blended, bg)).toBeCloseTo(1, 1);
       }
     }
   });
 
-  // Skip: Direct ratio and blended ratio are intentionally different for transparent colors
-  // The getContrastRatio function handles alpha differently than pre-blending
+  
+  
   it.skip('should validate transparency handling', () => {
     const generator = generateColorCombinations(50, {
       includeTransparency: true,
@@ -231,13 +231,13 @@ describe('Property-Based Testing', () => {
 
     for (const [fg, bg] of generator) {
       if (fg.a !== undefined && fg.a < 1) {
-        // Transparent foreground should be blended
+        
         const blended = alphaBlend(fg, bg);
         const directRatio = getContrastRatio(fg, bg);
         const blendedRatio = getContrastRatio(blended, bg);
 
-        // Both methods should produce similar results (within 5% tolerance)
-        // Note: Direct ratio may differ slightly due to transparency handling
+        
+        
         expect(directRatio).toBeCloseTo(blendedRatio, 1);
       }
     }
@@ -257,12 +257,12 @@ describe('Validation Functions', () => {
 
   it('should validate with color blindness simulation', () => {
     const result = validateContrast(
-      '#ff0000', // Red
-      '#00ff00', // Green
+      '#ff0000', 
+      '#00ff00', 
       { includeColorBlindness: true }
     );
 
-    // Should have warnings about color blindness
+    
     expect(result.warnings.length).toBeGreaterThan(0);
     expect(result.warnings.some(w => w.type === 'perception')).toBe(true);
   });
@@ -274,7 +274,7 @@ describe('Validation Functions', () => {
       { componentType: 'ui-component' }
     );
 
-    // Should pass with 3:1 requirement
+    
     expect(result.valid).toBe(true);
     expect(result.ratio).toBeGreaterThanOrEqual(3);
   });
@@ -286,7 +286,7 @@ describe('Validation Functions', () => {
       { componentType: 'large-text', level: 'AA' }
     );
 
-    // Large text only needs 3:1 for AA
+    
     expect(result.valid).toBe(true);
     expect(result.ratio).toBeGreaterThanOrEqual(3);
   });
@@ -304,7 +304,7 @@ describe('HSL Color Space Testing', () => {
       seed: 11111
     });
 
-    // Collect contrast ratios
+    
     const rgbRatios: number[] = [];
     const hslRatios: number[] = [];
 
@@ -316,7 +316,7 @@ describe('HSL Color Space Testing', () => {
       hslRatios.push(getContrastRatio(fg, bg));
     }
 
-    // Both should generate valid ratios
+    
     expect(rgbRatios.every(r => r >= 1 && r <= 21)).toBe(true);
     expect(hslRatios.every(r => r >= 1 && r <= 21)).toBe(true);
   });

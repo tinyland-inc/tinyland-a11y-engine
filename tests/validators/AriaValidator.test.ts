@@ -27,7 +27,7 @@ describe('AriaValidator', () => {
 
       const results = validator.validate(testContainer);
 
-      // Elements with valid aria-labels should not produce label-related errors
+      
       const labelErrors = results.filter(r =>
         r.message.includes('missing accessible name')
       );
@@ -44,7 +44,7 @@ describe('AriaValidator', () => {
 
       const results = validator.validate(testContainer);
 
-      // Should not error on valid references
+      
       const validReferenceErrors = results.filter(r =>
         r.message.includes('field-label') &&
         r.message.includes('missing accessible name')
@@ -61,8 +61,8 @@ describe('AriaValidator', () => {
 
       const results = validator.validate(testContainer);
 
-      // The validator checks elements with aria attributes
-      // Button with aria-describedby should be found
+      
+      
       expect(results).toBeDefined();
     });
 
@@ -75,7 +75,7 @@ describe('AriaValidator', () => {
 
       const results = validator.validate(testContainer);
 
-      // Input with aria-labelledby referencing existing IDs should not error
+      
       expect(results).toBeDefined();
     });
   });
@@ -91,7 +91,7 @@ describe('AriaValidator', () => {
 
       const results = validator.validate(testContainer);
 
-      // Should detect the invalid role
+      
       expect(results.some(r =>
         r.message.includes('invalid-role') &&
         r.message.includes('Invalid ARIA role')
@@ -108,13 +108,13 @@ describe('AriaValidator', () => {
 
       const results = validator.validate(testContainer);
 
-      // Checkbox without aria-checked
+      
       expect(results.some(r =>
         r.message.includes('checkbox') &&
         r.message.includes('aria-checked')
       )).toBe(true);
 
-      // Slider without aria-valuenow
+      
       expect(results.some(r =>
         r.message.includes('slider') &&
         r.message.includes('aria-valuenow')
@@ -135,8 +135,8 @@ describe('AriaValidator', () => {
 
       const results = validator.validate(testContainer);
 
-      // The validator does not implement nesting rules, but validates individual elements
-      // The button role is valid, and listitem/menuitem are valid roles
+      
+      
       expect(results).toBeDefined();
     });
   });
@@ -151,7 +151,7 @@ describe('AriaValidator', () => {
 
       const results = validator.validate(testContainer);
 
-      // Should detect invalid aria-expanded value
+      
       expect(results.some(r =>
         r.message.includes('aria-expanded') &&
         r.message.includes('invalid')
@@ -169,8 +169,8 @@ describe('AriaValidator', () => {
 
       const results = validator.validate(testContainer);
 
-      // The validator checks elements with aria-hidden attribute
-      // aria-hidden="true" and "false" are valid boolean values
+      
+      
       expect(results).toBeDefined();
     });
 
@@ -185,8 +185,8 @@ describe('AriaValidator', () => {
 
       const results = validator.validate(testContainer);
 
-      // The validator checks elements with ARIA attributes
-      // alert and status are valid roles
+      
+      
       expect(results).toBeDefined();
     });
   });
@@ -207,8 +207,8 @@ describe('AriaValidator', () => {
 
       const results = validator.validate(testContainer);
 
-      // The validator validates individual ARIA attributes
-      // Landmark elements with valid roles should be processed
+      
+      
       expect(results).toBeDefined();
       expect(Array.isArray(results)).toBe(true);
     });
@@ -223,8 +223,8 @@ describe('AriaValidator', () => {
 
       const results = validator.validate(testContainer);
 
-      // The validator processes elements with ARIA attributes
-      // Labeled navs with aria-label are validated
+      
+      
       expect(results).toBeDefined();
       expect(Array.isArray(results)).toBe(true);
     });
@@ -240,8 +240,8 @@ describe('AriaValidator', () => {
 
       const results = validator.validate(testContainer);
 
-      // The validator checks ARIA states on elements with aria attributes
-      // aria-required and aria-invalid are processed
+      
+      
       expect(results).toBeDefined();
       expect(Array.isArray(results)).toBe(true);
     });
@@ -255,8 +255,8 @@ describe('AriaValidator', () => {
 
       const results = validator.validate(testContainer);
 
-      // The validator processes elements with aria-invalid
-      // Both inputs have valid aria-invalid="true" values
+      
+      
       expect(results).toBeDefined();
       expect(Array.isArray(results)).toBe(true);
     });
@@ -276,8 +276,8 @@ describe('AriaValidator', () => {
 
       const results = validator.validate(testContainer);
 
-      // The validator processes elements with roles and aria attributes
-      // tab, tablist, tabpanel are all valid roles
+      
+      
       expect(results).toBeDefined();
       expect(Array.isArray(results)).toBe(true);
     });
@@ -294,7 +294,7 @@ describe('AriaValidator', () => {
 
       const results = validator.validate(testContainer);
 
-      // The second combobox is missing aria-expanded (required for combobox role)
+      
       expect(results.some(r =>
         r.message.includes('combobox') &&
         r.message.includes('aria-expanded')
@@ -312,8 +312,8 @@ describe('AriaValidator', () => {
 
       const results = validator.validate(testContainer);
 
-      // The validator does not currently detect redundant roles,
-      // but it validates the elements with roles
+      
+      
       expect(results).toBeDefined();
       expect(Array.isArray(results)).toBe(true);
     });
@@ -327,8 +327,8 @@ describe('AriaValidator', () => {
 
       const results = validator.validate(testContainer);
 
-      // The validator processes elements with role attributes
-      // The div with role="button" should be validated
+      
+      
       expect(results).toBeDefined();
       expect(Array.isArray(results)).toBe(true);
     });
@@ -347,8 +347,8 @@ describe('AriaValidator', () => {
 
       const results = validator.validate(testContainer);
 
-      // Dialog with aria-labelledby is properly labeled
-      // The validator should process this without errors
+      
+      
       expect(results).toBeDefined();
       expect(Array.isArray(results)).toBe(true);
     });
@@ -373,7 +373,7 @@ describe('AriaValidator', () => {
       const results = validator.validate(testContainer);
       const severeErrors = results.filter(r => r.severity === 'error');
 
-      // Well-formed menu should have minimal errors
+      
       expect(severeErrors.length).toBe(0);
     });
   });
