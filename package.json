@@ -76,7 +76,7 @@
     }
   },
   "dependencies": {
-    "@tummycrypt/tinyland-color-utils": ">=0.1.0"
+    "@tummycrypt/tinyland-color-utils": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
