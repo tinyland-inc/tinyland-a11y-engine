@@ -1,6 +1,6 @@
 import { defineConfig } from 'vitest/config';
 import { fileURLToPath } from 'node:url';
-import { dirname } from 'node:path';
+import { dirname, resolve } from 'node:path';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -10,10 +10,14 @@ export default defineConfig({
   test: {
     name: 'tinyland-a11y-engine',
     root: __dirname,
-    root: '.',
     include: ['tests/**/*.test.ts'],
     exclude: ['**/node_modules/**', '**/dist/**'],
-    environment: 'jsdom',
+    environment: 'node',
+    setupFiles: [resolve(__dirname, './tests/setup-dom.ts')],
+    pool: 'threads',
+    deps: {
+      interopDefault: true,
+    },
     globals: true,
     testTimeout: 30000,
     hookTimeout: 10000,
