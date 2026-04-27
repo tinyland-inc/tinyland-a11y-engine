@@ -1,6 +1,6 @@
 {
   "name": "@tummycrypt/tinyland-a11y-engine",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "description": "High-performance streaming accessibility evaluation engine with WCAG contrast analysis, ARIA validation, and keyboard navigation checking",
   "type": "module",
   "license": "Zlib AND LicenseRef-Tinyland-Proprietary",
@@ -45,7 +45,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "pnpm build && pnpm check:package",
+    "check:package": "publint"
   },
   "keywords": [
     "accessibility",
@@ -60,8 +61,7 @@
   "author": "Tinyland.dev",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tinyland-inc/tinyland.dev",
-    "directory": "packages/tinyland-a11y-engine"
+    "url": "git+https://github.com/tinyland-inc/tinyland-a11y-engine.git"
   },
   "peerDependencies": {
     "svelte": ">=4.0.0",
@@ -76,21 +76,28 @@
     }
   },
   "dependencies": {
-    "@tummycrypt/tinyland-color-utils": "workspace:*"
+    "@tummycrypt/tinyland-color-utils": "^0.2.2"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
-    "svelte": "^5.0.0",
     "axe-core": "^4.10.0",
+    "happy-dom": "^17.0.0",
+    "svelte": "^5.0.0",
     "typescript": "^5.0.0",
-    "vitest": "^4.0.0"
+    "vitest": "^4.0.0",
+    "publint": "^0.3.18",
+    "@tummycrypt/tinyland-color-utils": "^0.2.2"
   },
   "engines": {
     "node": ">=22.0.0"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",
-    "access": "public",
-    "provenance": true
+    "access": "public"
+  },
+  "packageManager": "pnpm@10.13.1",
+  "homepage": "https://github.com/tinyland-inc/tinyland-a11y-engine",
+  "bugs": {
+    "url": "https://github.com/tinyland-inc/tinyland-a11y-engine/issues"
   }
 }

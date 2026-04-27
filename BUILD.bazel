@@ -16,7 +16,7 @@ ts_project(
     ) + ["package.json"],
     declaration = True,
     declaration_map = True,
-    source_map = True,
+    source_map = False,
     resolve_json_module = True,
     tsconfig = ":tsconfig.json",
     transpiler = "tsc",
@@ -25,7 +25,6 @@ ts_project(
     validate = False,
     deps = [
         ":node_modules",
-        "//packages:tsconfig_base",
         ":node_modules/@types/node",
         ":node_modules/svelte",
         ":node_modules/axe-core",
@@ -42,7 +41,7 @@ npm_package(
         ":tinyland_a11y_engine",
     ],
     package = "@tummycrypt/tinyland-a11y-engine",
-    version = "0.1.0",
+    version = "0.2.2",
     visibility = ["//visibility:public"],
 )
 
@@ -51,7 +50,6 @@ vitest_bin.vitest_test(
     data = [
         ":node_modules",
         "tsconfig.json",
-        "//packages:tsconfig_base",
         ":node_modules/vitest",
         "vitest.config.ts",
     ] + glob(["src/**/*.ts"]) + glob(["tests/**/*.test.ts", "tests/**/*.ts"]),
@@ -75,7 +73,6 @@ ts_project(
     validate = False,
     deps = [
         ":node_modules",
-        "//packages:tsconfig_base",
         ":node_modules/@types/node",
         ":node_modules/svelte",
         ":node_modules/axe-core",
