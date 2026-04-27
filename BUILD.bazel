@@ -41,7 +41,7 @@ npm_package(
         ":tinyland_a11y_engine",
     ],
     package = "@tummycrypt/tinyland-a11y-engine",
-    version = "0.2.2",
+    version = "0.2.3",
     visibility = ["//visibility:public"],
 )
 
