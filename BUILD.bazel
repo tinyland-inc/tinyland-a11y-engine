@@ -13,7 +13,7 @@ ts_project(
             "src/**/*.test.ts",
             "src/**/*.spec.ts",
         ],
-    ) + ["package.json"],
+    ),
     declaration = True,
     declaration_map = True,
     source_map = False,
@@ -65,7 +65,7 @@ vitest_bin.vitest_test(
 
 ts_project(
     name = "typecheck",
-    srcs = glob(["src/**/*.ts"]) + ["package.json"],
+    srcs = glob(["src/**/*.ts"]),
     declaration = False,
     no_emit = True,
     tsconfig = ":tsconfig.json",
