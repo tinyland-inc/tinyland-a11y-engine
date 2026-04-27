@@ -85,7 +85,8 @@
     "svelte": "^5.0.0",
     "typescript": "^5.0.0",
     "vitest": "^4.0.0",
-    "publint": "^0.3.18"
+    "publint": "^0.3.18",
+    "@tummycrypt/tinyland-color-utils": "^0.2.2"
   },
   "engines": {
     "node": ">=22.0.0"
