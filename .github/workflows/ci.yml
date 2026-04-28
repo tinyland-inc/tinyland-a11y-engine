@@ -28,6 +28,6 @@ jobs:
       bazel_targets: "//:pkg //:test"
       package_dir: ./bazel-bin/pkg
       npm_access: public
-      github_package_name: "@tummycrypt/tinyland-a11y-engine"
+      github_package_name: "@tinyland-inc/tinyland-a11y-engine"
       dry_run: true
     secrets: inherit
