@@ -1,9 +1,17 @@
 load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
-load("@aspect_rules_js//npm:defs.bzl", "npm_package")
+load("@aspect_rules_js//npm:defs.bzl", "npm_link_package", "npm_package")
 load("@tummycrypt_tinyland_a11y_engine_npm//:defs.bzl", "npm_link_all_packages")
 load("@tummycrypt_tinyland_a11y_engine_npm//:vitest/package_json.bzl", vitest_bin = "bin")
 
 npm_link_all_packages(name = "node_modules")
+
+# First-party dep resolved through the Bazel module graph (not npm).
+# tinyland-color-utils is linked from its published module's :pkg target;
+# it is removed from package.json so npm_link_all_packages does not also link it.
+npm_link_package(
+    name = "node_modules/@tummycrypt/tinyland-color-utils",
+    src = "@tummycrypt_tinyland_color_utils//:pkg",
+)
 
 ts_project(
     name = "tinyland_a11y_engine",
@@ -28,6 +36,7 @@ ts_project(
         ":node_modules/@types/node",
         ":node_modules/svelte",
         ":node_modules/axe-core",
+        ":node_modules/@tummycrypt/tinyland-color-utils",
     ],
     visibility = ["//visibility:public"],
 )
@@ -51,6 +60,7 @@ vitest_bin.vitest_test(
         ":node_modules",
         "tsconfig.json",
         ":node_modules/vitest",
+        ":node_modules/@tummycrypt/tinyland-color-utils",
         "vitest.config.ts",
     ] + glob(["src/**/*.ts"]) + glob(["tests/**/*.test.ts", "tests/**/*.ts"]),
     args = [
@@ -76,6 +86,7 @@ ts_project(
         ":node_modules/@types/node",
         ":node_modules/svelte",
         ":node_modules/axe-core",
+        ":node_modules/@tummycrypt/tinyland-color-utils",
     ],
     visibility = ["//visibility:public"],
 )

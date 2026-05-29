@@ -7,10 +7,6 @@ settings:
 importers:
 
   .:
-    dependencies:
-      '@tummycrypt/tinyland-color-utils':
-        specifier: ^0.2.2
-        version: 0.2.2
     devDependencies:
       '@types/node':
         specifier: ^22.0.0
@@ -173,10 +169,6 @@ packages:
     resolution: {integrity: sha512-lVJX6qEgs/4DOcRTpo56tmKzVPtoWAaVbL4hfO7t7NVwl9AAXzQR6cihesW1BmNMPl+bK6dreu2sOKBP2Q9CIA==}
     peerDependencies:
       acorn: ^8.9.0
-
-  '@tummycrypt/tinyland-color-utils@0.2.2':
-    resolution: {integrity: sha512-BRpjPM4vVoUCooAjYLh985SDx4toHUn97Go8hHJ7PpCG9YnpRoIG7KW4RvT3yBeqlVdV0dItDli+/rOqe2/MaQ==}
-    engines: {node: '>=22.0.0'}
 
   '@tybys/wasm-util@0.10.1':
     resolution: {integrity: sha512-9tTaPJLSiejZKx+Bmog4uSubteqTvFrVrURwkmHixBo0G4seD0zUxp98E1DzUBJxLQ3NPwXrGKDiVjwx/DpPsg==}
@@ -672,8 +664,6 @@ snapshots:
   '@sveltejs/acorn-typescript@1.0.9(acorn@8.16.0)':
     dependencies:
       acorn: 8.16.0
-
-  '@tummycrypt/tinyland-color-utils@0.2.2': {}
 
   '@tybys/wasm-util@0.10.1':
     dependencies:
