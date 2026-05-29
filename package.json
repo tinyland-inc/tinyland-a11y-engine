@@ -75,9 +75,7 @@
       "optional": true
     }
   },
-  "dependencies": {
-    "@tummycrypt/tinyland-color-utils": "^0.2.2"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/node": "^22.0.0",
     "axe-core": "^4.10.0",
@@ -85,8 +83,7 @@
     "svelte": "^5.0.0",
     "typescript": "^5.0.0",
     "vitest": "^4.0.0",
-    "publint": "^0.3.18",
-    "@tummycrypt/tinyland-color-utils": "^0.2.2"
+    "publint": "^0.3.18"
   },
   "engines": {
     "node": ">=22.0.0"
