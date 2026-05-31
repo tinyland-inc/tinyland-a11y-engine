@@ -1,6 +1,6 @@
 {
   "name": "@tummycrypt/tinyland-a11y-engine",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "High-performance streaming accessibility evaluation engine with WCAG contrast analysis, ARIA validation, and keyboard navigation checking",
   "type": "module",
   "license": "Zlib AND LicenseRef-Tinyland-Proprietary",
@@ -11,6 +11,14 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./browser": {
+      "types": "./dist/browser.d.ts",
+      "import": "./dist/browser.js"
+    },
+    "./browser-runtime": {
+      "types": "./dist/browserRuntime.d.ts",
+      "import": "./dist/browserRuntime.js"
     },
     "./validators": {
       "types": "./dist/validators/index.d.ts",
