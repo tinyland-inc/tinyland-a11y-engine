@@ -249,3 +249,18 @@ export async function quickContrastCheck(
     passesAAA: result.passesAAA,
   };
 }
+
+// Browser-side accessibility runtime (also exposed via the ./browser and
+// ./browser-runtime subpath exports). Browser-only — axe-core is loaded
+// lazily via dynamic import.
+export {
+  detectBrowserA11yFingerprint,
+  runAxeEvaluation,
+  type BrowserA11yFingerprint,
+  type BrowserA11yViolation,
+} from './browser.js';
+export {
+  createBrowserA11yRuntime,
+  type BrowserA11yRuntimeActions,
+  type BrowserA11yRuntimeOptions,
+} from './browserRuntime.js';
